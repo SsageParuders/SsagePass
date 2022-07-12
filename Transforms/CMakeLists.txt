@@ -1,4 +1,4 @@
-# 参考官方文档:https://llvm.org/docs/CMake.html#developing-llvm-passes-out-of- source
+# 参考官方文档:https://llvm.org/docs/CMake.html#developing-llvm-passes-out-of-source
 project(SsagePass)
 cmake_minimum_required(VERSION 3.13.4)
 find_package(LLVM REQUIRED CONFIG)
