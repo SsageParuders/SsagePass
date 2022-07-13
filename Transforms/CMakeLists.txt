@@ -11,6 +11,7 @@ separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 include_directories(${LLVM_INCLUDE_DIRS})
 
-add_llvm_library( LLVMObfuscator MODULE
+add_llvm_library( SsageObfuscator MODULE
   src/HelloWorld.cpp
+  src/Utils.cpp
 )

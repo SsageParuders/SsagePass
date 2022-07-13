@@ -1,5 +1,7 @@
 >
-> 
+> Port to LLVM 14.01<br>
+> Docker for llvm environment: ssageparuders/ubuntu_llvm_14_01_pass<br>
+> Made by SsageParuders<br>
 >
 
 # [Source Code](./Transforms/)
@@ -19,6 +21,8 @@ chmod +x demo.sh && ./demo.sh
 > 
 
 # TODO LIST
+
+- [x] 实现对单个Function启用PASS
 
 - [ ] 完善英文文档
 

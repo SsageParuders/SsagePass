@@ -1,16 +1,11 @@
+// LLVM libs
 #include "llvm/Pass.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
-
-#include "llvm/Pass.h"
-#include "llvm/IR/Function.h"
-#include "llvm/Passes/PassBuilder.h"
-#include "llvm/Passes/PassPlugin.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/Transforms/IPO/PassManagerBuilder.h"
-
+// User libs
+#include "Utils.h"
+// namespace
 using namespace llvm;
 
 namespace {
@@ -23,8 +18,16 @@ namespace {
 }
 
 bool Demo::runOnFunction(Function &F){
-    outs() << "Hello, " << F.getName() << "\n";
-    return true;
+    // F.getEntryBlock();
+    // outs() << "Hello, " << F.getName() << "\n";
+    // return true;
+    Function *tmp = &F;
+    // Do we obfuscate
+    if (toObfuscate(false, tmp, "hlw")) {
+        outs() << "Hello, " << F.getName() << "\n";
+    }
+
+    return false;
 }
 
 char Demo::ID = 0;
