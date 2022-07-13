@@ -29,17 +29,3 @@ bool Demo::runOnFunction(Function &F){
 
 char Demo::ID = 0;
 static RegisterPass<Demo> X("hlw", "This is first pass by SsageParuders");
-// static void registerSkeletonPass(const PassManagerBuilder &,
-//                                  legacy::PassManagerBase &PM)
-// {
-//     PM.add(new Demo());
-// }
-// static RegisterStandardPasses
-//     RegisterMyPass(PassManagerBuilder::EP_EarlyAsPossible,
-//                    registerSkeletonPass);
-
-// static RegisterStandardPasses RegisterMyPass();
-// extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
-// llvmGetPassPluginInfo(){
-//     // return getOllvmPluginInfo();
-// }
