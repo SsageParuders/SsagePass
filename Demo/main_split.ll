@@ -12,12 +12,33 @@ target triple = "x86_64-unknown-linux-gnu"
 ; Function Attrs: mustprogress noinline nounwind optnone uwtable
 define dso_local noundef i32 @_Z3addii(i32 noundef %0, i32 noundef %1) #0 {
   %3 = alloca i32, align 4
+  br label %.split
+
+.split:                                           ; preds = %2
   %4 = alloca i32, align 4
+  br label %.split.split
+
+.split.split:                                     ; preds = %.split
   store i32 %0, i32* %3, align 4
+  br label %.split.split.split
+
+.split.split.split:                               ; preds = %.split.split
   store i32 %1, i32* %4, align 4
+  br label %.split.split.split.split
+
+.split.split.split.split:                         ; preds = %.split.split.split
   %5 = load i32, i32* %3, align 4
+  br label %.split.split.split.split.split
+
+.split.split.split.split.split:                   ; preds = %.split.split.split.split
   %6 = load i32, i32* %4, align 4
+  br label %.split.split.split.split.split.split
+
+.split.split.split.split.split.split:             ; preds = %.split.split.split.split.split
   %7 = add nsw i32 %5, %6
+  br label %.split.split.split.split.split.split.split
+
+.split.split.split.split.split.split.split:       ; preds = %.split.split.split.split.split.split
   ret i32 %7
 }
 

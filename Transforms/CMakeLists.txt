@@ -14,4 +14,5 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_llvm_library( SsageObfuscator MODULE
   src/SplitBasicBlock.cpp
   src/Utils.cpp
+  src/CryptoUtils.cpp
 )
