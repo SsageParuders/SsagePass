@@ -4,7 +4,11 @@
 > Made by SsageParuders<br>
 >
 
-# [Source Code](./Transforms/)
+# HowToUse
+
+
+
+# [Source Code](./Obfuscation/)
 
 > 
 
@@ -24,8 +28,8 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 实现对单个Function启用PASS
 
-- [ ] 完善英文文档
+- [x] 完善LLVM API文档
 
-- [ ] 完善LLVM API文档
+- [ ] 完善英文文档
 
 - [ ] 更换PASS管理器为`NEW PM`

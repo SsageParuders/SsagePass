@@ -1,5 +1,8 @@
 cd ./Demo # 进入Demo文件夹
-rm main.ll && rm main_split.ll && rm main_split # 清除上一次产物
+
+ls | grep -v main.cpp | xargs rm # 清除上一次产物
+
+echo "==================== Start Test Fla ===================="
 clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
 opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -split -split_num=7 -S main.ll -o main_split.ll # 使用opt优化中间pass
 ## 这里LLVM组织不再维护传统的`Legacy Pass Manager`而是采用了新的PASS管理器
@@ -12,3 +15,12 @@ opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -split -split_num=7 -S ma
 ## 参考3:https://llvm.org/docs/WritingAnLLVMPass.html#introduction-what-is-a-pass
 clang main_split.ll -o main_split # 正式编译为可执行程序
 ./main_split # 可执行程序执行
+echo "==================== Finish Test Fla ===================="
+
+echo "==================== Start Test Fla ===================="
+clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
+opt -lowerswitch -S main.ll -o main_lowerswitch.ll
+opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main_lowerswitch.ll -o main_fla.ll
+clang main_fla.ll -o main_fla
+./main_fla
+echo "==================== Finish Test Fla ===================="

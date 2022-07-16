@@ -14,6 +14,24 @@ STATISTIC(Split, "Basicblock splitted"); // 宏定义
 static cl::opt<int> SplitNum("split_num", cl::init(2), cl::desc("Split <split_num> time(s) each BB"));
 
 /**
+ * @brief 
+ * 
+ */
+namespace{ // 基本块分割
+    class SplitBasicBlock : public FunctionPass {
+        public:
+            static char ID; // Pass identification, replacement for typeid
+            bool flag;
+            SplitBasicBlock() : FunctionPass(ID) { } // 构造
+            SplitBasicBlock(bool flag) : FunctionPass(ID) { this->flag = flag; } // 携带flag的构造函数
+            bool runOnFunction(Function &F); // 主要函数
+            void split(Function *f); // 对单个基本块执行分裂操作
+            bool containsPHI(BasicBlock *BB); //判断一个基本块中是否包含 PHI指令(PHINode)
+            void shuffle(std::vector<int> &vec); // ?
+    };
+}
+
+/**
  * @brief 实现效果 选定被混淆的函数 每一条指令都被分割为一个基本块
  * 
  * @param F 
@@ -26,7 +44,7 @@ bool SplitBasicBlock::runOnFunction(Function &F){
         // \033[42;35mFinish Android Native Build SUCCEED !!\033[0m\n
         // \033[41;37mError !! Build failed !!\033[0m\n
         outs() << "\033[44;37m============SplitBasicBlock Start============\033[0m\n";
-        outs() << "\033[42;35mFunction is " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         split(tmp); // 分割流程
         ++Split; // 计次
         outs() << "\033[44;37m============SplitBasicBlock Finish============\033[0m\n";
@@ -48,8 +66,8 @@ void SplitBasicBlock::split(Function *f){
     // 遍历函数的全部基本块
     for (std::vector<BasicBlock *>::iterator I = origBB.begin(), IE = origBB.end();I != IE; ++I){
         BasicBlock *curr = *I;
-        outs() << "\033[42;35mSplitNum is " << SplitNum << "\033[0m\n";
-        outs() << "\033[42;35mBasicBlock Size is " << curr->size() << "\033[0m\n";
+        outs() << "\033[42;35mSplitNum : " << SplitNum << "\033[0m\n";
+        outs() << "\033[42;35mBasicBlock Size : " << curr->size() << "\033[0m\n";
         int splitN = SplitNum;
         // 无需分割只有一条指令的基本块
         // 不可分割含有PHI指令基本块
@@ -58,9 +76,12 @@ void SplitBasicBlock::split(Function *f){
         }
         // 检查splitN和基本块大小 如果传入的分割块数甚至大于等于基本块自身大小 则修改分割数为基本块大小减一
         if ((size_t)splitN >= curr->size()){
+            outs() << "\033[43;33mSplitNum is bigger then currBasicBlock's size\033[0m\n"; // warning
+            outs() << "\033[43;33mSo SplitNum Now is BasicBlock's size -1 : " << (curr->size() - 1) << "\033[0m\n";
             splitN = curr->size() - 1;
+        } else {
+            outs() << "\033[42;35msplitNum Now is " << splitN << "\033[0m\n";
         }
-        outs() << "\033[42;35msplitNum Now is " << splitN << "\033[0m\n";
         // Generate splits point
         std::vector<int> test;
         for (unsigned i = 1; i < curr->size(); ++i){
@@ -76,8 +97,9 @@ void SplitBasicBlock::split(Function *f){
         BasicBlock *toSplit = curr;
         int last = 0;
         for (int i = 0; i < splitN; ++i){
-            if (toSplit->size() < 2)
+            if (toSplit->size() < 2){
                 continue;
+            }
             for (int j = 0; j < test[i] - last; ++j){
                 ++it;
             }
@@ -106,8 +128,7 @@ bool SplitBasicBlock::containsPHI(BasicBlock *BB){
 
 void SplitBasicBlock::shuffle(std::vector<int> &vec){
     int n = vec.size();
-    for (int i = n - 1; i > 0; --i)
-    {
+    for (int i = n - 1; i > 0; --i){
         std::swap(vec[i], vec[cryptoutils->get_uint32_t() % (i + 1)]);
     }
 }

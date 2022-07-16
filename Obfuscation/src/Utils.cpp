@@ -12,6 +12,9 @@
 #include "Utils.h"
 
 using namespace llvm;
+using std::vector;
+
+LLVMContext *CONTEXT = nullptr;
 
 /**
  * @brief 参考资料:https://www.jianshu.com/p/0567346fd5e8
@@ -93,4 +96,31 @@ bool llvm::toObfuscate(bool flag, Function *f, std::string const &attribute) { /
         return true;
     }
     return false;
+}
+
+/**
+ * @brief 修复PHI指令和逃逸变量
+ * 
+ * @param F 
+ */
+void llvm::fixStack(Function &F) {
+    vector<PHINode*> origPHI;
+    vector<Instruction*> origReg;
+    BasicBlock &entryBB = F.getEntryBlock();
+    for(BasicBlock &BB : F){
+        for(Instruction &I : BB){
+            if(PHINode *PN = dyn_cast<PHINode>(&I)){
+                origPHI.push_back(PN);
+            }else if(!(isa<AllocaInst>(&I) && I.getParent() == &entryBB) 
+                && I.isUsedOutsideOfBlock(&BB)){
+                origReg.push_back(&I);
+            }
+        }
+    }
+    for(PHINode *PN : origPHI){
+        DemotePHIToStack(PN, entryBB.getTerminator());
+    }
+    for(Instruction *I : origReg){
+        DemoteRegToStack(*I, entryBB.getTerminator());
+    }
 }

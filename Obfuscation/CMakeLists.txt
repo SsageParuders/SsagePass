@@ -15,4 +15,5 @@ add_llvm_library( SsageObfuscator MODULE
   src/SplitBasicBlock.cpp
   src/Utils.cpp
   src/CryptoUtils.cpp
+  src/Flattening.cpp
 )

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int add(int a, int b) __attribute((__annotate__(("split split_num=7")))){
+int add(int a, int b) __attribute((__annotate__(("fla split_num=7")))){
     return (a+b);
 }
 
