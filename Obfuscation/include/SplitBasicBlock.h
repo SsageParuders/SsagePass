@@ -24,7 +24,7 @@ namespace llvm{ // 基本块分割
             bool runOnFunction(Function &F); // 主要函数
             void split(Function *f); // 对单个基本块执行分裂操作
             bool containsPHI(BasicBlock *BB); //判断一个基本块中是否包含 PHI指令(PHINode)
-            void shuffle(std::vector<int> &vec);
+            void shuffle(std::vector<int> &vec); // ?
     };
     FunctionPass *createSplitBasicBlock(bool flag);
 }

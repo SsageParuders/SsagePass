@@ -61,19 +61,16 @@ void SplitBasicBlock::split(Function *f){
             splitN = curr->size() - 1;
         }
         outs() << "\033[42;35msplitNum Now is " << splitN << "\033[0m\n";
-
         // Generate splits point
         std::vector<int> test;
         for (unsigned i = 1; i < curr->size(); ++i){
             test.push_back(i);
         }
-
         // Shuffle
         if (test.size() != 1){
             shuffle(test);
             std::sort(test.begin(), test.begin() + splitN);
         }
-
         // 分割
         BasicBlock::iterator it = curr->begin();
         BasicBlock *toSplit = curr;
@@ -87,11 +84,9 @@ void SplitBasicBlock::split(Function *f){
             last = test[i];
             toSplit = toSplit->splitBasicBlock(it, toSplit->getName() + ".split");
         }
-
         ++Split;
     }
 }
-
 
 /**
  * @brief 判断基本块是否包含PHI指令
@@ -128,5 +123,5 @@ FunctionPass *llvm::createSplitBasicBlock(bool flag){
 }
 
 char SplitBasicBlock::ID = 0;
-// 注册Pass --> 传统注册方案
+// 注册Pass --> 传统注册方案 // TODO: 改变为新的PASS管理器
 static RegisterPass<SplitBasicBlock> X("split", "Split a basic block into multiple basic blocks.");
