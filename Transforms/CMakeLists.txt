@@ -12,6 +12,6 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 include_directories(${LLVM_INCLUDE_DIRS})
 
 add_llvm_library( SsageObfuscator MODULE
-  src/HelloWorld.cpp
+  src/SplitBasicBlock.cpp
   src/Utils.cpp
 )

@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int add(int a, int b){
+int add(int a, int b) __attribute((__annotate__(("split split_num=7")))){
     return (a+b);
 }
 
-void say_hello() __attribute((__annotate__(("hlw")))) {
+void say_hello() {
     printf("Hello~\n");
 }
 
