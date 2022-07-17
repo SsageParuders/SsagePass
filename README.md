@@ -34,6 +34,10 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 解决LowerSwitchPass在LLVM-9以上的适配问题
 
-- [ ] 完善英文文档
-
 - [ ] 更换PASS管理器为`NEW PM`
+
+- [ ] 适配上Android编译链
+
+- [ ] 完善README和Docs文档
+
+- [ ] 完善英文文档

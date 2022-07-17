@@ -57,8 +57,7 @@ void Flattening::flatten(Function &F){
     // Lower switch
     FunctionPass *lower = createLegacyLowerSwitchPass();
     lower->runOnFunction(F);
-
-    outs() << "Lower switch had open\n";
+    outs() << "\033[42;35mLower switch had open\033[0m\n";
 
     // 将除入口块（第一个基本块）以外的基本块保存到一个 vector 容器中，便于后续处理
     // 首先保存所有基本块
