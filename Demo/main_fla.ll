@@ -1,4 +1,4 @@
-; ModuleID = 'main_lowerswitch.ll'
+; ModuleID = 'main.ll'
 source_filename = "main.cpp"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
@@ -17,19 +17,19 @@ define dso_local noundef i32 @_Z3addii(i32 noundef %0, i32 noundef %1) #0 {
   %.reg2mem = alloca i32*, align 8
   %3 = alloca i32, align 4
   %swVar.ptr = alloca i32, align 4
-  store i32 2080368803, i32* %swVar.ptr, align 4
+  store i32 1361811130, i32* %swVar.ptr, align 4
   br label %dispatchBB
 
 dispatchBB:                                       ; preds = %2, %returnBB
   %swVar = load i32, i32* %swVar.ptr, align 4
   switch i32 %swVar, label %swDefault [
-    i32 2080368803, label %.split
-    i32 480308760, label %.split.split
-    i32 462402169, label %.split.split.split
-    i32 292971025, label %.split.split.split.split
-    i32 1171293737, label %.split.split.split.split.split
-    i32 2093956375, label %.split.split.split.split.split.split
-    i32 773781556, label %.split.split.split.split.split.split.split
+    i32 1361811130, label %.split
+    i32 532832542, label %.split.split
+    i32 894557986, label %.split.split.split
+    i32 1335340613, label %.split.split.split.split
+    i32 1785358190, label %.split.split.split.split.split
+    i32 820984169, label %.split.split.split.split.split.split
+    i32 1650420512, label %.split.split.split.split.split.split.split
   ]
 
 swDefault:                                        ; preds = %dispatchBB
@@ -38,31 +38,31 @@ swDefault:                                        ; preds = %dispatchBB
 .split:                                           ; preds = %dispatchBB
   %4 = alloca i32, align 4
   store i32* %4, i32** %.reg2mem, align 8
-  store i32 480308760, i32* %swVar.ptr, align 4
+  store i32 532832542, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split:                                     ; preds = %dispatchBB
   store i32 %0, i32* %3, align 4
-  store i32 462402169, i32* %swVar.ptr, align 4
+  store i32 894557986, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split.split:                               ; preds = %dispatchBB
   %.reload1 = load volatile i32*, i32** %.reg2mem, align 8
   store i32 %1, i32* %.reload1, align 4
-  store i32 292971025, i32* %swVar.ptr, align 4
+  store i32 1335340613, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split.split.split:                         ; preds = %dispatchBB
   %5 = load i32, i32* %3, align 4
   store i32 %5, i32* %.reg2mem2, align 4
-  store i32 1171293737, i32* %swVar.ptr, align 4
+  store i32 1785358190, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split.split.split.split:                   ; preds = %dispatchBB
   %.reload = load volatile i32*, i32** %.reg2mem, align 8
   %6 = load i32, i32* %.reload, align 4
   store i32 %6, i32* %.reg2mem4, align 4
-  store i32 2093956375, i32* %swVar.ptr, align 4
+  store i32 820984169, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split.split.split.split.split:             ; preds = %dispatchBB
@@ -70,7 +70,7 @@ swDefault:                                        ; preds = %dispatchBB
   %.reload5 = load volatile i32, i32* %.reg2mem4, align 4
   %7 = add nsw i32 %.reload3, %.reload5
   store i32 %7, i32* %.reg2mem6, align 4
-  store i32 773781556, i32* %swVar.ptr, align 4
+  store i32 1650420512, i32* %swVar.ptr, align 4
   br label %returnBB
 
 .split.split.split.split.split.split.split:       ; preds = %dispatchBB

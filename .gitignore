@@ -1,4 +1,3 @@
 build
 .vscode
-Demo/main.ll
-Demo/main_hlw.ll
+Demo/*.ll

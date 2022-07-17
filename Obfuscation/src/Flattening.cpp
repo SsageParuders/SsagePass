@@ -8,6 +8,8 @@ using std::vector;
 #define DEBUG_TYPE "flattening" // 调试标识
 // Stats
 STATISTIC(Flattened, "Functions flattened");
+// char ID = 0;
+// char &llvm::LowerSwitchID = ID;
 
 namespace{
     class Flattening : public FunctionPass {
@@ -47,10 +49,13 @@ void Flattening::flatten(Function &F){
         outs() << "\033[43;33mFunction size is lower then one\033[0m\n"; // warning
         return;
     }
+    
     // Lower switch
     // 调用 Lower switch 会导致崩溃，解决方法未知
     // FunctionPass *pass = createLowerSwitchPass();
     // pass->runOnFunction(F);
+    // outs() << "Lower switch had open\n";
+
     // 将除入口块（第一个基本块）以外的基本块保存到一个 vector 容器中，便于后续处理
     // 首先保存所有基本块
     vector<BasicBlock*> origBB;

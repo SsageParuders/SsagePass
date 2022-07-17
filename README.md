@@ -30,6 +30,10 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 完善LLVM API文档
 
+- [ ] 解决LowerSwitchPass在LLVM-9以上的适配问题
+
+- [ ] 测试Hikari的14适配
+
 - [ ] 完善英文文档
 
 - [ ] 更换PASS管理器为`NEW PM`
