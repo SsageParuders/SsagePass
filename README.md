@@ -30,9 +30,9 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 完善LLVM API文档
 
-- [ ] 解决LowerSwitchPass在LLVM-9以上的适配问题
+- [x] 测试Hikari的14适配
 
-- [ ] 测试Hikari的14适配
+- [x] 解决LowerSwitchPass在LLVM-9以上的适配问题
 
 - [ ] 完善英文文档
 

@@ -16,4 +16,5 @@ add_llvm_library( SsageObfuscator MODULE
   src/Utils.cpp
   src/CryptoUtils.cpp
   src/Flattening.cpp
+  src/LegacyLowerSwitch.cpp
 )
