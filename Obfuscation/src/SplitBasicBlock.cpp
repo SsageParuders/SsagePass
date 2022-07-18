@@ -11,7 +11,8 @@ using std::vector;
 STATISTIC(Split, "Basicblock splitted"); // 宏定义
 
 // 可选的参数，指定一个基本块会被分裂成几个基本块，默认值为 2
-static cl::opt<int> SplitNum("split_num", cl::init(2), cl::desc("Split <split_num> time(s) each BB"));
+static cl::opt<int> SplitNum("split_num", cl::init(999), cl::desc("Split <split_num> time(s) each BB")); 
+// 貌似NEW PM暂时不支持这种传递 因此修改默认为999 反正下面会做处理
 
 /**
  * @brief 新的实现方案
@@ -23,7 +24,6 @@ static cl::opt<int> SplitNum("split_num", cl::init(2), cl::desc("Split <split_nu
 PreservedAnalyses SplitBasicBlockPass::run(Function& F, FunctionAnalysisManager& AM) {
     Function *tmp = &F; // 传入的Function
     if (toObfuscate(flag, tmp, "split")){ // 判断什么函数需要开启混淆
-        outs() << "flag is " << flag << "\n";
         outs() << "\033[44;37m============SplitBasicBlock Start============\033[0m\n";
         outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         split(tmp); // 分割流程

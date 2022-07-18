@@ -8,7 +8,7 @@
 #include "llvm/Transforms/Utils/Cloning.h"
 // System libs
 #include <vector>
-//  常用宏定义
+// 常用宏定义
 #define INIT_CONTEXT(F) CONTEXT=&F.getContext()
 #define TYPE_I32 Type::getInt32Ty(*CONTEXT)
 #define CONST_I32(V) ConstantInt::get(TYPE_I32, V, false)

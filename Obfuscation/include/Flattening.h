@@ -15,6 +15,16 @@
 #include <cstdlib>
 #include <ctime>
 namespace llvm{
-    FunctionPass *createFlattening(bool flag);
+    class FlatteningPass : public PassInfoMixin<FlatteningPass>{ 
+        public:
+            bool flag;
+            FlatteningPass(bool flag){
+                this->flag = flag;
+            } // 携带flag的构造函数
+            PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
+            void flatten(Function &F);
+            static bool isRequired() { return true; }
+    };
+    FlatteningPass *createFlattening(bool flag);
 }
 #endif // LLVM_FLATTENING_H

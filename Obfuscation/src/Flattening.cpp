@@ -10,38 +10,23 @@ using std::vector;
 // Stats
 STATISTIC(Flattened, "Functions flattened");
 
-namespace{
-    class Flattening : public FunctionPass {
-        public:
-            static char ID;
-            bool flag;
-            Flattening() : FunctionPass(ID){
-                srand(time(0));
-            }
-            Flattening(bool flag) : FunctionPass(ID) { this->flag = flag; }
-            // 对函数 F 进行平坦化
-            void flatten(Function &F);
-            bool runOnFunction(Function &F);
-    };
-}
-
-bool Flattening::runOnFunction(Function &F){
-    Function *tmp = &F;
+PreservedAnalyses FlatteningPass::run(Function& F, FunctionAnalysisManager& AM) {
+    Function *tmp = &F; // 传入的Function
     // 判断是否需要开启控制流平坦化
     if (toObfuscate(flag, tmp, "fla")) {
         outs() << "\033[44;37m============Flattening Start============\033[0m\n";
         outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         INIT_CONTEXT(F);
-        FunctionPass *pass = createSplitBasicBlock(flag); // 在虚假控制流之前先进行基本块分割 以提高混淆程度
-        pass->runOnFunction(F); // 在虚假控制流之前先进行基本块分割 以提高混淆程度
+        SplitBasicBlockPass *pass = createSplitBasicBlock(flag); // 在虚假控制流之前先进行基本块分割 以提高混淆程度
+        pass->run(F, AM);
         flatten(*tmp);
         ++Flattened;
         outs() << "\033[44;37m============Flattening Finish============\033[0m\n";
     }
-    return true;
+    return PreservedAnalyses::none();
 }
 
-void Flattening::flatten(Function &F){
+void FlatteningPass::flatten(Function &F){
     outs() << "\033[42;35mFunction size : " << F.size() << "\033[0m\n";
     // 基本块数量不超过1则无需平坦化
     if(F.size() <= 1){
@@ -131,9 +116,6 @@ void Flattening::flatten(Function &F){
     fixStack(F); // 修复逃逸变量和PHI指令
 }
 
-FunctionPass *llvm::createFlattening(bool flag) {
-    return new Flattening(flag);
+FlatteningPass *llvm::createFlattening(bool flag) {
+    return new FlatteningPass(flag);
 }
-
-char Flattening::ID = 0;
-static RegisterPass<Flattening> X("fla", "Flatten the basic blocks in each function."); // 注册PASS
