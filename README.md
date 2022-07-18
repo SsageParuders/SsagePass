@@ -34,7 +34,11 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 解决LowerSwitchPass在LLVM-9以上的适配问题
 
-- [ ] 更换PASS管理器为`NEW PM`
+- [x] 更换PASS管理器为`NEW PM`
+
+- [ ] 解决`SplitNum`混淆程度在`NEW PM`上的传递问题
+
+- [ ] 解决`NEW PM`中 clang如何触发指定PASS的功能
 
 - [ ] 适配上Android编译链
 

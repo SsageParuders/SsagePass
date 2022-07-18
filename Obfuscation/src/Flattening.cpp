@@ -17,8 +17,9 @@ PreservedAnalyses FlatteningPass::run(Function& F, FunctionAnalysisManager& AM) 
         outs() << "\033[44;37m============Flattening Start============\033[0m\n";
         outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         INIT_CONTEXT(F);
-        SplitBasicBlockPass *pass = createSplitBasicBlock(flag); // 在虚假控制流之前先进行基本块分割 以提高混淆程度
-        pass->run(F, AM);
+        // 不再自动进行基本块分割
+        // SplitBasicBlockPass *pass = createSplitBasicBlock(flag); // 在控制流平坦化之前先进行基本块分割 以提高混淆程度
+        // pass->run(F, AM);
         flatten(*tmp);
         ++Flattened;
         outs() << "\033[44;37m============Flattening Finish============\033[0m\n";
@@ -35,7 +36,7 @@ void FlatteningPass::flatten(Function &F){
     }
 
     // Lower switch
-    // 调用 Lower switch 会导致崩溃，解决方法未知
+    // 调用 Lower switch 会导致崩溃
     // FunctionPass *pass = createLowerSwitchPass();
     // pass->runOnFunction(F);
 
