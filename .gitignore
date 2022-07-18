@@ -2,3 +2,5 @@ build
 .vscode
 Demo/*.ll
 llvm-pass-tutorial-dev
+SsagePass-master
+obfuscator-AutoRegistration

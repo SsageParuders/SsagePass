@@ -11,74 +11,35 @@ target triple = "x86_64-unknown-linux-gnu"
 
 ; Function Attrs: mustprogress noinline nounwind optnone uwtable
 define dso_local noundef i32 @_Z3addii(i32 noundef %0, i32 noundef %1) #0 {
-  %.reg2mem6 = alloca i32, align 4
-  %.reg2mem4 = alloca i32, align 4
-  %.reg2mem2 = alloca i32, align 4
-  %.reg2mem = alloca i32*, align 8
   %3 = alloca i32, align 4
-  %swVar.ptr = alloca i32, align 4
-  store i32 2075477681, i32* %swVar.ptr, align 4
-  br label %dispatchBB
+  br label %.split
 
-dispatchBB:                                       ; preds = %2, %returnBB
-  %swVar = load i32, i32* %swVar.ptr, align 4
-  switch i32 %swVar, label %swDefault [
-    i32 2075477681, label %.split
-    i32 843495324, label %.split.split
-    i32 1901855798, label %.split.split.split
-    i32 575426227, label %.split.split.split.split
-    i32 11358184, label %.split.split.split.split.split
-    i32 171394088, label %.split.split.split.split.split.split
-    i32 698853322, label %.split.split.split.split.split.split.split
-  ]
-
-swDefault:                                        ; preds = %dispatchBB
-  br label %returnBB
-
-.split:                                           ; preds = %dispatchBB
+.split:                                           ; preds = %2
   %4 = alloca i32, align 4
-  store i32* %4, i32** %.reg2mem, align 8
-  store i32 843495324, i32* %swVar.ptr, align 4
-  br label %returnBB
+  br label %.split.split
 
-.split.split:                                     ; preds = %dispatchBB
+.split.split:                                     ; preds = %.split
   store i32 %0, i32* %3, align 4
-  store i32 1901855798, i32* %swVar.ptr, align 4
-  br label %returnBB
+  br label %.split.split.split
 
-.split.split.split:                               ; preds = %dispatchBB
-  %.reload1 = load volatile i32*, i32** %.reg2mem, align 8
-  store i32 %1, i32* %.reload1, align 4
-  store i32 575426227, i32* %swVar.ptr, align 4
-  br label %returnBB
+.split.split.split:                               ; preds = %.split.split
+  store i32 %1, i32* %4, align 4
+  br label %.split.split.split.split
 
-.split.split.split.split:                         ; preds = %dispatchBB
+.split.split.split.split:                         ; preds = %.split.split.split
   %5 = load i32, i32* %3, align 4
-  store i32 %5, i32* %.reg2mem2, align 4
-  store i32 11358184, i32* %swVar.ptr, align 4
-  br label %returnBB
+  br label %.split.split.split.split.split
 
-.split.split.split.split.split:                   ; preds = %dispatchBB
-  %.reload = load volatile i32*, i32** %.reg2mem, align 8
-  %6 = load i32, i32* %.reload, align 4
-  store i32 %6, i32* %.reg2mem4, align 4
-  store i32 171394088, i32* %swVar.ptr, align 4
-  br label %returnBB
+.split.split.split.split.split:                   ; preds = %.split.split.split.split
+  %6 = load i32, i32* %4, align 4
+  br label %.split.split.split.split.split.split
 
-.split.split.split.split.split.split:             ; preds = %dispatchBB
-  %.reload3 = load volatile i32, i32* %.reg2mem2, align 4
-  %.reload5 = load volatile i32, i32* %.reg2mem4, align 4
-  %7 = add nsw i32 %.reload3, %.reload5
-  store i32 %7, i32* %.reg2mem6, align 4
-  store i32 698853322, i32* %swVar.ptr, align 4
-  br label %returnBB
+.split.split.split.split.split.split:             ; preds = %.split.split.split.split.split
+  %7 = add nsw i32 %5, %6
+  br label %.split.split.split.split.split.split.split
 
-.split.split.split.split.split.split.split:       ; preds = %dispatchBB
-  %.reload7 = load volatile i32, i32* %.reg2mem6, align 4
-  ret i32 %.reload7
-
-returnBB:                                         ; preds = %.split.split.split.split.split.split, %.split.split.split.split.split, %.split.split.split.split, %.split.split.split, %.split.split, %.split, %swDefault
-  br label %dispatchBB
+.split.split.split.split.split.split.split:       ; preds = %.split.split.split.split.split.split
+  ret i32 %7
 }
 
 ; Function Attrs: mustprogress noinline optnone uwtable

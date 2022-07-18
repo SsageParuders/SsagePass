@@ -14,42 +14,23 @@ STATISTIC(Split, "Basicblock splitted"); // 宏定义
 static cl::opt<int> SplitNum("split_num", cl::init(2), cl::desc("Split <split_num> time(s) each BB"));
 
 /**
- * @brief 
- * 
- */
-namespace{ // 基本块分割
-    class SplitBasicBlock : public FunctionPass {
-        public:
-            static char ID; // Pass identification, replacement for typeid
-            bool flag;
-            SplitBasicBlock() : FunctionPass(ID) { } // 构造
-            SplitBasicBlock(bool flag) : FunctionPass(ID) { this->flag = flag; } // 携带flag的构造函数
-            bool runOnFunction(Function &F); // 主要函数
-            void split(Function *f); // 对单个基本块执行分裂操作
-            bool containsPHI(BasicBlock *BB); //判断一个基本块中是否包含 PHI指令(PHINode)
-            void shuffle(std::vector<int> &vec); // ?
-    };
-}
-
-/**
- * @brief 实现效果 选定被混淆的函数 每一条指令都被分割为一个基本块
+ * @brief 新的实现方案
  * 
  * @param F 
- * @return true 
- * @return false 
+ * @param AM 
+ * @return PreservedAnalyses 
  */
-bool SplitBasicBlock::runOnFunction(Function &F){
+PreservedAnalyses SplitBasicBlockPass::run(Function& F, FunctionAnalysisManager& AM) {
     Function *tmp = &F; // 传入的Function
     if (toObfuscate(flag, tmp, "split")){ // 判断什么函数需要开启混淆
-        // \033[42;35mFinish Android Native Build SUCCEED !!\033[0m\n
-        // \033[41;37mError !! Build failed !!\033[0m\n
+        outs() << "flag is " << flag << "\n";
         outs() << "\033[44;37m============SplitBasicBlock Start============\033[0m\n";
         outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         split(tmp); // 分割流程
         ++Split; // 计次
         outs() << "\033[44;37m============SplitBasicBlock Finish============\033[0m\n";
     }
-    return false;
+    return PreservedAnalyses::none();
 }
 
 /**
@@ -57,7 +38,7 @@ bool SplitBasicBlock::runOnFunction(Function &F){
  * 
  * @param BB 
  */
-void SplitBasicBlock::split(Function *f){
+void SplitBasicBlockPass::split(Function *f){
     std::vector<BasicBlock *> origBB;
     // 保存所有基本块 防止分割的同时迭代新的基本块
     for (Function::iterator I = f->begin(), IE = f->end(); I != IE; ++I){
@@ -117,7 +98,7 @@ void SplitBasicBlock::split(Function *f){
  * @return true 
  * @return false 
  */
-bool SplitBasicBlock::containsPHI(BasicBlock *BB){
+bool SplitBasicBlockPass::containsPHI(BasicBlock *BB){
     for (Instruction &I : *BB){
         if (isa<PHINode>(&I)){
             return true;
@@ -126,7 +107,12 @@ bool SplitBasicBlock::containsPHI(BasicBlock *BB){
     return false;
 }
 
-void SplitBasicBlock::shuffle(std::vector<int> &vec){
+/**
+ * @brief 辅助分割流程的函数
+ * 
+ * @param vec 
+ */
+void SplitBasicBlockPass::shuffle(std::vector<int> &vec){
     int n = vec.size();
     for (int i = n - 1; i > 0; --i){
         std::swap(vec[i], vec[cryptoutils->get_uint32_t() % (i + 1)]);
@@ -139,10 +125,6 @@ void SplitBasicBlock::shuffle(std::vector<int> &vec){
  * @param flag
  * @return FunctionPass*
  */
-FunctionPass *llvm::createSplitBasicBlock(bool flag){
-    return new SplitBasicBlock(flag);
+SplitBasicBlockPass *llvm::createSplitBasicBlock(bool flag){
+    return new SplitBasicBlockPass(flag);
 }
-
-char SplitBasicBlock::ID = 0;
-// 注册Pass --> 传统注册方案 // TODO: 改变为新的PASS管理器
-static RegisterPass<SplitBasicBlock> X("split", "Split a basic block into multiple basic blocks.");

@@ -21,6 +21,7 @@ echo "==================== Start Test Fla ===================="
 clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
 # opt -lowerswitch -S main.ll -o main_lowerswitch.ll
 # opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main_lowerswitch.ll -o main_fla.ll
+# opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=obf-split -S main.ll -o main_split.ll
 opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll
 clang main_fla.ll -o main_fla
 ./main_fla
