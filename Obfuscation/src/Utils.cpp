@@ -78,7 +78,7 @@ bool llvm::toObfuscate(bool flag, Function *f, std::string const &attribute) { /
         return false;
     }
     // Check external linkage
-    if (f->hasAvailableExternallyLinkage() != 0) { 
+    if (f->hasAvailableExternallyLinkage() != 0) {
         return false;
     }
     // We have to check the nofla flag first

@@ -24,11 +24,13 @@ chmod +x demo.sh && ./demo.sh
 
 > 
 
+---
+
 # TODO LIST
 
 - [x] 实现对单个Function启用PASS
 
-- [x] 完善LLVM API文档
+- [x] 初步完善LLVM API文档
 
 - [x] 测试Hikari的14适配
 
@@ -45,3 +47,17 @@ chmod +x demo.sh && ./demo.sh
 - [ ] 完善README和Docs文档
 
 - [ ] 完善英文文档
+
+---
+
+# Credits
+
+[OLLVM](https://github.com/heroims/obfuscator) By heroims
+
+[llvm-pass-tutorial](https://github.com/LeadroyaL/llvm-pass-tutorial) By LeadroyaL
+
+[llvm-tutor](https://github.com/banach-space/llvm-tutor) By banach-space
+
+[Pluto-Obfuscator](https://github.com/bluesadi/Pluto-Obfuscator) By bluesadi
+
+---
