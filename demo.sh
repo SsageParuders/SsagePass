@@ -21,7 +21,7 @@ ls | grep -v main.cpp | grep -v help.txt | xargs rm # 清除上一次产物
 echo "==================== Start Test Fla With opt ===================="
 clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
 # opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
-opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -S main.ll -o main_fla.ll
+opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -S main.ll -o main_fla.ll
 # opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
 # opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
 # 一种传递混淆程度的临时方案
@@ -31,6 +31,8 @@ echo "==================== Finish Test Fla With opt ===================="
 
 echo "==================== Start Test Fla With clang ===================="
 clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需要 -O1 
+# 这个是clang加载NEW Pass插件的方案 怎么说呢,你看过我issues就知道怎么回事了,目前貌似new pm不支持插件形式的指定混淆
+# 所以我采用的是函数注解+自动注册方案实现的 ?????
 # clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
 ## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
 ./main

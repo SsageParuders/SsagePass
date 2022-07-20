@@ -4,3 +4,5 @@ Demo/*.ll
 llvm-pass-tutorial-dev
 SsagePass-master
 obfuscator-AutoRegistration
+Demo/main
+Demo/main_*
