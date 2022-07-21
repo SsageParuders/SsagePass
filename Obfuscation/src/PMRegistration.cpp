@@ -1,5 +1,6 @@
 #include "SplitBasicBlock.h" // 基本块分割
 #include "Flattening.h"  // 控制流平坦化
+#include "StringEncryption.h" // 字符串加密
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 
@@ -14,7 +15,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 2 << "\n";
+            outs() << "Version is " << 3 << "\n";
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
                   ArrayRef<PassBuilder::PipelineElement>) {
@@ -27,14 +28,28 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                   return true;
                 }
                 return false;
-              });
-             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
-             PB.registerVectorizerStartEPCallback(
-                [](llvm::FunctionPassManager &FPM,
-                    llvm::OptimizationLevel Level){
-                  FPM.addPass(SplitBasicBlockPass(false)); // 优先进行基本块分割
-                  FPM.addPass(FlatteningPass(false)); // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
-              });
+            });
+            PB.registerPipelineParsingCallback(
+                [&](StringRef Name, ModulePassManager &MPM,
+                    ArrayRef<PassBuilder::PipelineElement>){
+                  if (Name == "strenc"){ // 注册字符串混淆
+                    MPM.addPass(StringEncryptionPass(false));
+                    return true;
+                  }
+                  return false;
+            });
+            // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
+            PB.registerVectorizerStartEPCallback(
+              [](llvm::FunctionPassManager &FPM,
+                  llvm::OptimizationLevel Level){
+                FPM.addPass(SplitBasicBlockPass(false)); // 优先进行基本块分割
+                FPM.addPass(FlatteningPass(false)); // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+            });
+            PB.registerOptimizerLastEPCallback(
+                [](llvm::ModulePassManager &MPM,
+                  llvm::OptimizationLevel Level){
+                MPM.addPass(StringEncryptionPass(false)); // 字符串加密
+            });
         }};
 }
 

@@ -38,7 +38,7 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 更换PASS管理器为`NEW PM`
 
-- [ ] 适配来自goron的字符串加密
+- [x] 适配来自Hikari的字符串加密
 
 - [ ] 解决`SplitNum`混淆程度在`NEW PM`上的传递问题
 
@@ -63,5 +63,7 @@ chmod +x demo.sh && ./demo.sh
 [Pluto-Obfuscator](https://github.com/bluesadi/Pluto-Obfuscator) By bluesadi
 
 [goron](https://github.com/amimo/goron) By amimo
+
+[Hikari](https://github.com/HikariObfuscator/Hikari) By HikariObfuscator[Naville]
 
 ---

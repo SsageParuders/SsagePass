@@ -124,3 +124,38 @@ void llvm::fixStack(Function &F) {
         DemoteRegToStack(*I, entryBB.getTerminator());
     }
 }
+
+void llvm::FixFunctionConstantExpr(Function *Func) {
+  // Replace ConstantExpr with equal instructions
+  // Otherwise replacing on Constant will crash the compiler
+  for (BasicBlock &BB : *Func) {
+    FixBasicBlockConstantExpr(&BB);
+  }
+}
+
+void llvm::FixBasicBlockConstantExpr(BasicBlock *BB) {
+  // Replace ConstantExpr with equal instructions
+  // Otherwise replacing on Constant will crash the compiler
+  // Things to note:
+  // - Phis must be placed at BB start so CEs must be placed prior to current BB
+  assert(!BB->empty() && "BasicBlock is empty!");
+  assert((BB->getParent() != NULL) && "BasicBlock must be in a Function!");
+  Instruction *FunctionInsertPt = &*(BB->getParent()->getEntryBlock().getFirstInsertionPt());
+  // Instruction* LocalBBInsertPt=&*(BB.getFirstInsertionPt());
+  for (Instruction &I : *BB) {
+    if (isa<LandingPadInst>(I) || isa<FuncletPadInst>(I)) {
+        continue;
+    }
+    for (unsigned i = 0; i < I.getNumOperands(); i++) {
+      if (ConstantExpr *C = dyn_cast<ConstantExpr>(I.getOperand(i))) {
+        Instruction *InsertPt = &I;
+        IRBuilder<NoFolder> IRB(InsertPt);
+        if (isa<PHINode>(I)) {
+          IRB.SetInsertPoint(FunctionInsertPt);
+        }
+        Instruction *Inst = IRB.Insert(C->getAsInstruction());
+        I.setOperand(i, Inst);
+      }
+    }
+  }
+}

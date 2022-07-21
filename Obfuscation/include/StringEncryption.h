@@ -7,52 +7,36 @@
 #include "llvm/IR/GlobalValue.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/InstIterator.h"
+#include "llvm/IR/Instructions.h"
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Value.h"
+#include "llvm/Pass.h"
+#include "llvm/Support/CommandLine.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Transforms/Utils/BasicBlockUtils.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
 // User libs
 #include "CryptoUtils.h"
-#include "ObfuscationOptions.h"
 #include "Utils.h"
 // System libs
 #include <map>
 #include <set>
 #include <iostream>
 #include <algorithm>
-
+using namespace std;
 namespace llvm {
     class StringEncryptionPass : public PassInfoMixin<StringEncryptionPass>{
         public:
-            struct CSPEntry {
-                CSPEntry() : ID(0), Offset(0), DecGV(nullptr), DecStatus(nullptr), DecFunc(nullptr) {}
-                unsigned ID;
-                unsigned Offset;
-                GlobalVariable *DecGV;
-                GlobalVariable *DecStatus; // is decrypted or not
-                std::vector<uint8_t> Data;
-                std::vector<uint8_t> EncKey;
-                Function *DecFunc;
-            };
-            struct CSUser{
-                CSUser(GlobalVariable *User, GlobalVariable *NewGV) : GV(User), DecGV(NewGV), DecStatus(nullptr), InitFunc(nullptr) {}
-                GlobalVariable *GV;
-                GlobalVariable *DecGV;
-                GlobalVariable *DecStatus; // is decrypted or not
-                Function *InitFunc;        // InitFunc will use decryted string to initialize DecGV
-            };
-            ObfuscationOptions *Options;
-            CryptoUtils RandomEngine;
-            std::vector<CSPEntry *> ConstantStringPool;
-            std::map<GlobalVariable *, CSPEntry *> CSPEntryMap;
-            std::map<GlobalVariable *, CSUser *> CSUserMap;
-            GlobalVariable *EncryptedStringTable;
-            std::set<GlobalVariable *> MaybeDeadGlobalVars;
+            bool flag;
+            map<Function * /*Function*/, GlobalVariable * /*Decryption Status*/>encstatus;
+            StringEncryptionPass(bool flag){
+                this->flag = flag;
+            }
             PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM); // Pass实现函数
-            void collectConstantStringUser(GlobalVariable *CString, std::set<GlobalVariable *> &Users); // 收集字符串
-            void getRandomBytes(std::vector<uint8_t> &Bytes, uint32_t MinSize, uint32_t MaxSize); //
-            Function *buildDecryptFunction(Module *M, const CSPEntry *Entry); //
-            Function *buildInitFunction(Module *M, const CSUser *User);
-            bool isValidToEncrypt(GlobalVariable *GV); //
-            void deleteUnusedGlobalVariable();
-            bool processConstantStringUse(Function *F); // 
+            void HandleFunction(Function *Func); // 处理字符串加密
+            void HandleDecryptionBlock(BasicBlock *B, BasicBlock *C, map<GlobalVariable *, Constant *> &GV2Keys); // 处理解密函数
+            bool doFinalization(Module &M);
             static bool isRequired() { return true; } // 直接返回true即可
     };
     StringEncryptionPass *createStringEncryption(bool flag); // 创建字符串加密

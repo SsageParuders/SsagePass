@@ -879,6 +879,10 @@ uint8_t CryptoUtils::get_uint8_t() {
   return (uint8_t)ret;
 }
 
+uint16_t CryptoUtils::get_uint16_t() { 
+  return (uint16_t)get_uint64_t(); 
+}
+
 char CryptoUtils::get_char() {
   char ret;
 

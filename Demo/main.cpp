@@ -5,8 +5,8 @@
 int add(int a, int b) __attribute((__annotate__(("fla split")))){
     return (a+b);
 }
-
-void say_hello() {
+// strenc
+void say_hello() __attribute((__annotate__(("strenc")))){
     printf("Hello~\n");
 }
 
