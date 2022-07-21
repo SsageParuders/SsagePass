@@ -38,6 +38,8 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 更换PASS管理器为`NEW PM`
 
+- [ ] 适配来自goron的字符串加密
+
 - [ ] 解决`SplitNum`混淆程度在`NEW PM`上的传递问题
 
 - [ ] 解决`NEW PM`中 clang如何触发指定PASS的功能
@@ -59,5 +61,7 @@ chmod +x demo.sh && ./demo.sh
 [llvm-tutor](https://github.com/banach-space/llvm-tutor) By banach-space
 
 [Pluto-Obfuscator](https://github.com/bluesadi/Pluto-Obfuscator) By bluesadi
+
+[goron](https://github.com/amimo/goron) By amimo
 
 ---
