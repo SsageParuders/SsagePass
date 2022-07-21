@@ -15,7 +15,16 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 3 << "\n";
+            outs() << "Version is " << 4 << "\n";
+            PB.registerPipelineParsingCallback( // 优先进行字符串混淆 以方便对字符串加密基本块做分割和混淆
+                [&](StringRef Name, ModulePassManager &MPM,
+                    ArrayRef<PassBuilder::PipelineElement>){
+                  if (Name == "strenc"){ // 注册字符串混淆
+                    MPM.addPass(StringEncryptionPass(false));
+                    return true;
+                  }
+                  return false;
+                });
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
                   ArrayRef<PassBuilder::PipelineElement>) {
@@ -27,17 +36,8 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                   FPM.addPass(SplitBasicBlockPass(false));
                   return true;
                 }
-                return false;
-            });
-            PB.registerPipelineParsingCallback(
-                [&](StringRef Name, ModulePassManager &MPM,
-                    ArrayRef<PassBuilder::PipelineElement>){
-                  if (Name == "strenc"){ // 注册字符串混淆
-                    MPM.addPass(StringEncryptionPass(false));
-                    return true;
-                  }
                   return false;
-            });
+                });
             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
             PB.registerVectorizerStartEPCallback(
               [](llvm::FunctionPassManager &FPM,
