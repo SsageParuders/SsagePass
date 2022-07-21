@@ -1,3 +1,34 @@
+# LLVM_IR
+
+> [官方文档](https://llvm.org/docs/LangRef.html#high-level-structure)
+
+## IR结构
+
+- 模块 Module <br>
+    1. 头部信息 <br>
+        目标平台等
+    2. 全局符号 <br>
+        函数定义、函数声明、全局变量
+- 函数 Function <br>
+    1. 参数
+    2. 入口块
+    3. 其他基本块
+- 基本块 BasicBlock <br>
+    1. 标签
+    2. PHI指令
+    3. 其他指令
+    4. 终结指令 <br>
+        `br、switch、retn`
+
+### 混淆层次 <br>
+
+- 以函数为单位 <br>
+    控制流平坦化
+- 以基本块为单位 <br>
+    虚假控制流
+- 以指令为基本单位 <br>
+    指令替代
+
 ## 常用LLVM IR指令解释
 
 ---
@@ -6,32 +37,43 @@
 
 - ret 函数的返回指令<br>
     对应C/C++的`return`<br>
-    1. 需要指定返回值的类型和值的ret指令(可以返回一整个结构体)
-    2. 无返回值的ret指令
+    1. 需要指定返回值的类型和值的ret指令(可以返回一整个结构体) <br>
+        `ret \<type> \<value>` <br>
+        > ret { i64, i32} { i64, 8, i32 8}
+    2. 无返回值的ret指令 <br>
+        `ret void`
 
 - br 分支指令<br>
     对应C/C++的`if`<br>
     > 分为非条件分支和条件分支指令
     1. 无条件分支指令类似于x86的`jmp`指令
-    2. 条件分支类似于x86汇编的`jnz`或`je`指令
+    2. 条件分支类似于x86汇编的`jnz`或`je`指令 <br>
+        `br i1 \<cond>, label \<true>, label \<false>`
 
-- 补充:比较指令 
+- 补充:比较指令
     1. icmp:整数或指针的比较指令<br>
-        cond 条件可为: eq 相等 ｜ ne 不相等 | ugt 无符号大于 | ...
+        `\<result> = icmp \<cond> \<ty> \<op1> \<op2> <br>` <br>
+        cond 条件可为: eq 相等 ｜ ne 不相等 | ugt 无符号大于 | ... <br>
+        > result = icmp eq i32 1,1 ; yields: result = false
+
     2. fcmp:浮点数的比较指令<br>
         cond 条件可为: oeq 相等并且两个操作数不可为NAN ｜ ueq 相等 | ...<br>
-        > o的意思就是ordered 意思是两个操作数都不可为NAN 否则返回false
+        > o(ordered): 两个操作数都不可为NAN 否则返回false
 
 - switch 分支指令<br>
-    可以看作是br指令的升级版 支持的分支更多<br>
     相当于C/C++的`switch`指令<br>
+    可以看作是br指令的升级版 支持的分支更多<br>
+    `switch \<intty> \<value>, lable \<defaultdest> [val:dest ...]`
 
 ---
 
 ### 二元运算 LLVM IR 指令
 
 - add 整数的加法指令<br>
-    对应C/C++的`+`
+    对应C/C++的`+` <br>
+    `\<result> = add nuw nsw \<ty> \<op1>, \<op2>` <br>
+    > nuw : No Unsigned Wrap <br>
+    > nsw : No Signed Wrap
 
 - sub 整数的减法指令<br>
     对应C/C++的`-`
@@ -41,11 +83,12 @@
 
 - udiv 无符号整数除法指令<br>
     对应C/C++的`/`<br>
-    如果有exact(精确)关键字修饰 则如果op1不是op2的倍数 则出错
+    `\<result> = udiv exact \<ty> \<op1>, \<op2>` <br>
+    > 如果有exact(精确)关键字修饰 则如果op1不是op2的倍数 则出错 <br>
 
 - sdiv 有符号的整数除法指令<br>
     对应C/C++的`/`<br>
-    如果有exact(精确)关键字修饰 则如果op1不是op2的倍数 则出错
+    > 如果有exact(精确)关键字修饰 则如果op1不是op2的倍数 则出错
 
 - urem 无符号整数的取余数指令<br>
     对应C/C++`%`
@@ -84,17 +127,24 @@
 
 ### 内存访问和寻址操作
 
+> 静态单赋值(SSA): 程序中一个变量只能有一条赋值语句
+
 - alloca 内存分配指令<br>
     在栈中分配一段空间并获得指向改空间的指针<br>
-    对应C/C++的`malloc`
+    对应C/C++的`malloc` <br>
+    `\<result> = alloca \<type> [, \<ty> \<NumElements>] [, align \<alignment>]` <br>
+    > 分配sizeof(type)*NumElements字节, 并与alignment对齐
 
 - store 内存储存指令<br>
     向指针指向的内存中存储数据<br>
-    类似于C/C++中的指针解引用后的赋值操作
+    类似于C/C++中的指针解引用后的赋值操作 <br>
+    `store \<ty> \<value>, \<ty>\* \<pointer>` <br>
+    > 写入value到ptr
 
 - load 内存读取指令<br>
     从指针指向的内存中读取数据<br>
-    类似于C/C++中的指针解引用操作
+    类似于C/C++中的指针解引用操作 <br>
+    `load \<ty> \<value>, \<ty>\* \<pointer>`
 
 ---
 
@@ -112,6 +162,7 @@
 
 - sext ... to 符号位拓展<br>
     通过复制符号位(最高位) 将一种类型的变量拓展为另一种类型的变量<br>
+    > When sign extending from i1, the extension always results in -1 or 0.
 
 ---
 
@@ -120,6 +171,7 @@
 - phi SSA衍生指令<br>
     为了解决SSA一个变量只能被赋值一次而引起问题的衍生指令<br>
     phi指令的计算结果由phi指令所在基本块的前驱块确定<br>
+    `\<result> = phi \<ty> [\<val0>, \<lable0>], ...`
 
 - select <br>
     类似于C/C++的三元运算符`...?...:...`
