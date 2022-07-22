@@ -1,6 +1,6 @@
 >
-> Port to LLVM 14.01<br>
-> Docker for llvm environment: ssageparuders/ubuntu_llvm_14_01_pass<br>
+> Port to LLVM 14.06<br>
+> Docker for llvm environment: ssageparuders/android_llvm_14.06:18.04<br>
 > Made by SsageParuders<br>
 >
 
@@ -90,7 +90,7 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 初步完善README和Docs文档
 
-- [ ] 适配上Android编译链
+- [x] 初步适配上Android编译链
 
 - [ ] 完善英文文档
 
