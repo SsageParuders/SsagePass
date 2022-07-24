@@ -20,10 +20,10 @@ ls | grep -v main.cpp | grep -v help.txt | xargs rm # 清除上一次产物
 
 echo "==================== Start Test Fla With opt ===================="
 clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
-# opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
-opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
-# opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
-# opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
+# opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
+opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
+# opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
+# opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
 # 一种传递混淆程度的临时方案
 clang main_fla.ll -o main_fla
 ./main_fla
@@ -39,10 +39,10 @@ echo "==================== Finish Test Fla With clang ===================="
 
 echo "==================== Start Test strenc With opt ===================="
 clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
-# opt -load ../Build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
-opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_strenc.ll
-# opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
-# opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
+# opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
+opt --load-pass-plugin=../build/libSsageObfuscator.so -O1 -S main.ll -o main_strenc.ll
+# opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
+# opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
 # 一种传递混淆程度的临时方案
 clang main_strenc.ll -o main_strenc
 ./main_strenc

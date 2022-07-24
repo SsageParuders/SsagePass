@@ -15,19 +15,16 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 4 << "\n";
-            PB.registerPipelineParsingCallback( // 优先进行字符串混淆 以方便对字符串加密基本块做分割和混淆
-                [&](StringRef Name, ModulePassManager &MPM,
-                    ArrayRef<PassBuilder::PipelineElement>){
-                  if (Name == "strenc"){ // 注册字符串混淆
-                    MPM.addPass(StringEncryptionPass(false));
-                    return true;
-                  }
-                  return false;
-                });
+            outs() << "Version is " << 7 << "\n";
+            // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
-                  ArrayRef<PassBuilder::PipelineElement>) {
+                ArrayRef<PassBuilder::PipelineElement>) {
+                llvm::ModulePassManager MPM;
+                if (Name == "strenc"){ // 注册字符串混淆
+                  MPM.addPass(StringEncryptionPass(false));
+                  return true;
+                }
                 if(Name == "fla"){ // 注册控制流平坦化
                   FPM.addPass(FlatteningPass(false));
                   return true;
@@ -36,19 +33,20 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                   FPM.addPass(SplitBasicBlockPass(false));
                   return true;
                 }
-                  return false;
-                });
+                return false;
+            });
+            // clang
+            PB.registerPipelineStartEPCallback(
+                [](llvm::ModulePassManager &MPM, // 模块Pass 作用于某个c文件内
+                   llvm::OptimizationLevel Level){
+                    MPM.addPass(StringEncryptionPass(false)); // 先进行字符串加密 出现字符串加密基本块以后 再进行基本块分割和其他混淆 加大解密难度
+            });
             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
             PB.registerVectorizerStartEPCallback(
-              [](llvm::FunctionPassManager &FPM,
-                  llvm::OptimizationLevel Level){
-                FPM.addPass(SplitBasicBlockPass(false)); // 优先进行基本块分割
-                FPM.addPass(FlatteningPass(false)); // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
-            });
-            PB.registerOptimizerLastEPCallback(
-                [](llvm::ModulePassManager &MPM,
-                  llvm::OptimizationLevel Level){
-                MPM.addPass(StringEncryptionPass(false)); // 字符串加密
+                [](llvm::FunctionPassManager &FPM, // 函数Pass 作用于某个函数内
+                   llvm::OptimizationLevel Level){
+                    FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
+                    FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
             });
         }};
 }

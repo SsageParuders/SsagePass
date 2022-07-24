@@ -1,4 +1,6 @@
 # 参考官方文档:https://llvm.org/docs/CMake.html#developing-llvm-passes-out-of-source
+# 参考文献资料:https://github.com/LeadroyaL/llvm-pass-tutorial
+
 ## 请确保编译器是来自NDK的clang 自举编译
 cmake_minimum_required(VERSION 3.13.4)
 # SET (CMAKE_C_COMPILER_WORKS 1)

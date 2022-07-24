@@ -53,6 +53,7 @@ void SplitBasicBlockPass::split(Function *f){
         // 无需分割只有一条指令的基本块
         // 不可分割含有PHI指令基本块
         if (curr->size() < 2 || containsPHI(curr)){
+            outs() << "\033[43;33mThis BasicBlock is lower then two or had PIH Instruction!\033[0m\n";
             continue;
         }
         // 检查splitN和基本块大小 如果传入的分割块数甚至大于等于基本块自身大小 则修改分割数为基本块大小减一

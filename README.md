@@ -12,9 +12,9 @@
 
     ```bash
     # opt样例 -- 默认开启全部Pass 但是是否真的启用 依然需要读取并且判断函数注解
-    opt --load-pass-plugin=../Build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
+    opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
     # opt样例 -- 指定开启全局某Pass 但是是否真的启用某Pass 依然需要读取并且判断函数注解
-    opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -S main.ll -o main_fla.ll
+    opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -S main.ll -o main_fla.ll
     # clang样例
     clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main
     ```
@@ -28,7 +28,7 @@
     *把动态库用两种方案都加载一遍，但是Pass用NEW PM控制*
     ```bash
     # opt样例
-    opt --load-pass-plugin=../Build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
+    opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
     # clang样例
     clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
     ```
@@ -90,7 +90,7 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 初步完善README和Docs文档
 
-- [x] 初步适配上Android编译链
+- [x] 初步适配上Android编译链[ndk_r25]
 
 - [ ] 完善英文文档
 
