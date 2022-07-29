@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int add(int a, int b) __attribute((__annotate__(("fla split")))){
+int add(int a, int b) __attribute((__annotate__(("indibr")))){
     return (a+b);
 }
 // strenc
-void say_hello() __attribute((__annotate__(("fla split strenc")))){
+void say_hello() __attribute((__annotate__(("indibr strenc")))){
     printf("Hello~\n");
 }
 

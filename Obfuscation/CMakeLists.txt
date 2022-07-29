@@ -5,12 +5,12 @@
 cmake_minimum_required(VERSION 3.13.4)
 # SET (CMAKE_C_COMPILER_WORKS 1)
 # SET (CMAKE_CXX_COMPILER_WORKS 1)
-set(CMAKE_C_COMPILER /root/android-ndk-r25/toolchains/llvm/prebuilt/linux-x86_64/bin/clang) # 调用原生NDK的clang
-set(CMAKE_CXX_COMPILER /root/android-ndk-r25/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++) # 调用原生NDK的clang++
+set(CMAKE_C_COMPILER /root/android_clang_14_06/bin/clang) # 调用原生NDK的clang 来自AOSP
+set(CMAKE_CXX_COMPILER /root/android_clang_14_06/bin/clang) # 调用原生NDK的clang++ 来自AOSP
 
 project(SsagePass) # 项目名称
 # we need LLVM_HOME in order not automatically set LLVM_DIR
-set(ENV{LLVM_HOME} /root/android-ndk-r25/toolchains/llvm/prebuilt/linux-x86_64) # 指定LLVM_HOME为原生NDK
+set(ENV{LLVM_HOME} /root/android_clang_14_06) # 指定LLVM_HOME为来自原生NDK的
 set(ENV{LLVM_DIR} /root/android_clang_14_06/lib64/cmake/llvm) # 指定cmake文件 如此可以连接到LLVM库
 
 find_package(LLVM REQUIRED CONFIG) # 寻找LLVM依赖包
@@ -34,6 +34,7 @@ add_library( SsageObfuscator MODULE # 生成动态库文件
   src/LegacyLowerSwitch.cpp
   src/PMRegistration.cpp
   src/StringEncryption.cpp
+  src/IndirectBranch.cpp
 )
 
 # Use C++11 to compile your pass (i.e., supply -std=c++11).

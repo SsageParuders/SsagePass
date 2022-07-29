@@ -1,6 +1,7 @@
 #include "SplitBasicBlock.h" // 基本块分割
 #include "Flattening.h"  // 控制流平坦化
 #include "StringEncryption.h" // 字符串加密
+#include "IndirectBranch.h" //
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 
@@ -15,16 +16,11 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 7 << "\n";
+            outs() << "Version is " << 9 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
                 ArrayRef<PassBuilder::PipelineElement>) {
-                llvm::ModulePassManager MPM;
-                if (Name == "strenc"){ // 注册字符串混淆
-                  MPM.addPass(StringEncryptionPass(false));
-                  return true;
-                }
                 if(Name == "fla"){ // 注册控制流平坦化
                   FPM.addPass(FlatteningPass(false));
                   return true;
@@ -35,11 +31,25 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                 }
                 return false;
             });
+            // for opt
+            PB.registerPipelineParsingCallback(
+                [&](StringRef Name, ModulePassManager &MPM,
+                    ArrayRef<PassBuilder::PipelineElement>){
+                  if (Name == "strenc"){
+                    MPM.addPass(StringEncryptionPass(false));
+                    return true;
+                  }
+                  if (Name == "indibr"){
+                    MPM.addPass(IndirectBranchPass(false));
+                  }
+                  return false;
+            });
             // clang
             PB.registerPipelineStartEPCallback(
                 [](llvm::ModulePassManager &MPM, // 模块Pass 作用于某个c文件内
                    llvm::OptimizationLevel Level){
                     MPM.addPass(StringEncryptionPass(false)); // 先进行字符串加密 出现字符串加密基本块以后 再进行基本块分割和其他混淆 加大解密难度
+                    MPM.addPass(IndirectBranchPass(false)); // 间接指令
             });
             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
             PB.registerVectorizerStartEPCallback(
