@@ -23,8 +23,8 @@ PreservedAnalyses FunctionWrapperPass::run(Module &M, ModuleAnalysisManager& AM)
     for (Module::iterator iter = M.begin(); iter != M.end(); iter++) {
       Function &F = *iter; // 迭代每个函数
       if (toObfuscate(flag, &F, "funwra")) {
-        outs() << "\033[44;37m============FunctionWrapper Start============\033[0m\n";
-        outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[1;34m============FunctionWrapper Start============\033[0m\n";
+        outs() << "\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         for (inst_iterator fi = inst_begin(&F); fi != inst_end(&F); fi++) {
           Instruction *Inst = &*fi;
           if (isa<CallInst>(Inst) || isa<InvokeInst>(Inst)) {
@@ -33,7 +33,7 @@ PreservedAnalyses FunctionWrapperPass::run(Module &M, ModuleAnalysisManager& AM)
             }
           }
         }
-        outs() << "\033[44;37m============FunctionWrapper Finish============\033[0m\n";
+        outs() << "\033[1;34m============FunctionWrapper Finish============\033[0m\n";
       }
     }
     for (CallSite *CS : callsites) {
@@ -69,7 +69,7 @@ CallSite* FunctionWrapperPass::HandleCallSite(CallSite *CS) {
       types.push_back(CS->getArgOperand(i)->getType());
     }
     FunctionType *ft = FunctionType::get(CS->getType(), ArrayRef<Type *>(types), false);
-    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, "HikariFunctionWrapper", CS->getParent()->getModule());
+    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, "O0ooOO0o0OO0oO", CS->getParent()->getModule()); // 移除Hikari特征
     appendToCompilerUsed(*func->getParent(), {func});
     // FIXME: Correctly Steal Function Attributes
     // func->addFnAttr(Attribute::AttrKind::OptimizeNone);

@@ -10,13 +10,13 @@ PreservedAnalyses StringEncryptionPass::run(Module &M, ModuleAnalysisManager& AM
     for (Module::iterator iter = M.begin(); iter != M.end(); iter++){
         Function *F = &(*iter);
         if (toObfuscate(flag, F, "strenc")){
-            outs() << "\033[44;37m============StringEncryption Start============\033[0m\n";
-            outs() << "\033[42;35mFunction : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+            outs() << "\033[1;34m============StringEncryption Start============\033[0m\n";
+            outs() << "\033[1;32mFunction : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
             Constant *S = ConstantInt::get(Type::getInt32Ty(M.getContext()), 0);
             GlobalVariable *GV = new GlobalVariable(M, S->getType(), false, GlobalValue::LinkageTypes::PrivateLinkage, S, "");
             encstatus[F] = GV;
             HandleFunction(F);
-            outs() << "\033[44;37m============StringEncryption Finish============\033[0m\n";
+            outs() << "\033[1;34m============StringEncryption Finish============\033[0m\n";
         }
     }
     return PreservedAnalyses::all();

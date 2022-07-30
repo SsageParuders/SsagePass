@@ -18,7 +18,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 14 << "\n";
+            outs() << "Version is " << 16 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
@@ -66,7 +66,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                     FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
                     MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
             });
-            // 这里的注册时机不好 启用以下方案 改用上面的方案
+            // 这里的注册时机不好 弃用以下方案 改用上面的方案
             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
             // PB.registerVectorizerStartEPCallback(
             //     [](llvm::FunctionPassManager &FPM, // 函数Pass 作用于某个函数内

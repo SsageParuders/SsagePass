@@ -24,10 +24,10 @@ PreservedAnalyses IndirectBranchPass::run(Module &M, ModuleAnalysisManager& AM) 
     }
     for (Function *F : funcs) {
         if (toObfuscate(flag, F, "indibr")) {
-            outs() << "\033[44;37m============IndirectBranch Start============\033[0m\n";
-            outs() << "\033[42;35mFunction : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+            outs() << "\033[1;34m============IndirectBranch Start============\033[0m\n";
+            outs() << "\033[1;32mFunction : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
             HandleFunction(*F);
-            outs() << "\033[44;37m============IndirectBranch Finish============\033[0m\n";
+            outs() << "\033[1;34m============IndirectBranch Finish============\033[0m\n";
         }
     }
     return PreservedAnalyses::all();
@@ -66,7 +66,7 @@ bool IndirectBranchPass::HandleFunction(Function &Func){
         if (BI->isConditional() || indexmap.find(BI->getSuccessor(0)) == indexmap.end()) {
             // Create a new GV
             Constant *BlockAddressArray = ConstantArray::get(AT, ArrayRef<Constant *>(BlockAddresses));
-            LoadFrom = new GlobalVariable(*Func.getParent(), AT, false, GlobalValue::LinkageTypes::PrivateLinkage, BlockAddressArray, "HikariConditionalLocalIndirectBranchingTable");
+            LoadFrom = new GlobalVariable(*Func.getParent(), AT, false, GlobalValue::LinkageTypes::PrivateLinkage, BlockAddressArray, "Oo0ooO0o00OConditionalLocalIndirectBranchingTable"); // 移除Hikari特征
             appendToCompilerUsed(*Func.getParent(), {LoadFrom});
         } else {
             LoadFrom = Func.getParent()->getGlobalVariable("IndirectBranchingGlobalTable", true);

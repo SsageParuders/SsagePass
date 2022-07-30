@@ -195,12 +195,12 @@ PreservedAnalyses BogusControlFlowPass::run(Function& F, FunctionAnalysisManager
     }
     // If fla annotations
     if (toObfuscate(flag, &F, "bcf")){
-        outs() << "\033[44;37m============BogusControlFlow Start============\033[0m\n";
-        outs() << "\033[42;35mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
-        bogus(F); //
-        doF(*F.getParent()); //
-        outs() << "\033[44;37m============BogusControlFlow Finish============\033[0m\n";
-        return PreservedAnalyses::none();
+      outs() << "\033[1;34m============BogusControlFlow Start============\033[0m\n";
+      outs() << "\033\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+      bogus(F);                                                            //
+      doF(*F.getParent());                                                 //
+      outs() << "\033[1;34m============BogusControlFlow Finish============\033[0m\n";
+      return PreservedAnalyses::none();
     }
     return PreservedAnalyses::all();
 }

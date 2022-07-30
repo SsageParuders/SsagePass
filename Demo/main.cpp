@@ -2,11 +2,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int add(int a, int b) __attribute((__annotate__(("funwra bcf fla strenc indibr")))){
+int add(int a, int b) __attribute((__annotate__(("split bcf fla strenc")))){
     return (a+b);
 }
 // strenc  indibr strenc
-void say_hello() __attribute((__annotate__(("funwra bcf fla strenc indibr")))){
+void say_hello() __attribute((__annotate__(("funwra indibr")))){
     printf("Hello~\n");
 }
 
