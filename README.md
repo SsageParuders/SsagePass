@@ -92,6 +92,12 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 初步适配上Android编译链[ndk_r25]
 
+- [x] 适配来自Hikari的间接跳转
+
+- [ ] 适配来自Hikari的函数包装
+
+- [ ] 适配Hikari优化过的虚假控制流
+
 - [ ] 完善英文文档
 
 ---
@@ -108,6 +114,6 @@ chmod +x demo.sh && ./demo.sh
 
 [goron](https://github.com/amimo/goron) By amimo
 
-[Hikari](https://github.com/HikariObfuscator/Hikari) By HikariObfuscator[Naville]
+[Hikari](https://github.com/HikariObfuscator/Hikari) By HikariObfuscator
 
 ---

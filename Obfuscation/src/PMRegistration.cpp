@@ -2,6 +2,7 @@
 #include "Flattening.h"  // 控制流平坦化
 #include "StringEncryption.h" // 字符串加密
 #include "IndirectBranch.h" //
+#include "FunctionWrapper.h" //
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 
@@ -16,7 +17,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 9 << "\n";
+            outs() << "Version is " << 11 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
@@ -42,6 +43,9 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                   if (Name == "indibr"){
                     MPM.addPass(IndirectBranchPass(false));
                   }
+                  if (Name == "funwra"){
+                    MPM.addPass(IndirectBranchPass(false));
+                  }
                   return false;
             });
             // clang
@@ -49,6 +53,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                 [](llvm::ModulePassManager &MPM, // 模块Pass 作用于某个c文件内
                    llvm::OptimizationLevel Level){
                     MPM.addPass(StringEncryptionPass(false)); // 先进行字符串加密 出现字符串加密基本块以后 再进行基本块分割和其他混淆 加大解密难度
+                    MPM.addPass(FunctionWrapperPass(false)); // 函数包装
                     MPM.addPass(IndirectBranchPass(false)); // 间接指令
             });
             // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
