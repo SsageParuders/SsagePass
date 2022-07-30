@@ -94,9 +94,9 @@ chmod +x demo.sh && ./demo.sh
 
 - [x] 适配来自Hikari的间接跳转
 
-- [ ] 适配来自Hikari的函数包装
+- [x] 适配来自Hikari的函数包装
 
-- [ ] 适配Hikari优化过的虚假控制流
+- [x] 适配Hikari优化过的虚假控制流
 
 - [ ] 完善英文文档
 

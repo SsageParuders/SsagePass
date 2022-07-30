@@ -3,6 +3,7 @@
 #include "StringEncryption.h" // 字符串加密
 #include "IndirectBranch.h" //
 #include "FunctionWrapper.h" //
+#include "BogusControlFlow.h" // 虚假控制流
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/PassPlugin.h"
 
@@ -17,7 +18,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 11 << "\n";
+            outs() << "Version is " << 12 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
@@ -28,6 +29,10 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                 }
                 if(Name == "split"){ // 注册基本块分割
                   FPM.addPass(SplitBasicBlockPass(false));
+                  return true;
+                }
+                if(Name == "bcf"){ // 注册虚假控制流
+                  FPM.addPass(BogusControlFlowPass(false));
                   return true;
                 }
                 return false;
@@ -62,7 +67,9 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                    llvm::OptimizationLevel Level){
                     FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
                     FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+                    FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
             });
+            outs() << "";
         }};
 }
 
