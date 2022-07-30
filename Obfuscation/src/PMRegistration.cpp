@@ -18,7 +18,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 12 << "\n";
+            outs() << "Version is " << 14 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
@@ -60,16 +60,22 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                     MPM.addPass(StringEncryptionPass(false)); // 先进行字符串加密 出现字符串加密基本块以后 再进行基本块分割和其他混淆 加大解密难度
                     MPM.addPass(FunctionWrapperPass(false)); // 函数包装
                     MPM.addPass(IndirectBranchPass(false)); // 间接指令
-            });
-            // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
-            PB.registerVectorizerStartEPCallback(
-                [](llvm::FunctionPassManager &FPM, // 函数Pass 作用于某个函数内
-                   llvm::OptimizationLevel Level){
+                    llvm::FunctionPassManager FPM;
                     FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
-                    FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
                     FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
+                    FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+                    MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
             });
-            outs() << "";
+            // 这里的注册时机不好 启用以下方案 改用上面的方案
+            // 自动注册 需要添加 -O1 参数 然则可能部分pass不生效
+            // PB.registerVectorizerStartEPCallback(
+            //     [](llvm::FunctionPassManager &FPM, // 函数Pass 作用于某个函数内
+            //        llvm::OptimizationLevel Level){
+            //         FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
+            //         FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+            //         FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
+            // });
+            outs() << "Made By SsageParuders\n";
         }};
 }
 

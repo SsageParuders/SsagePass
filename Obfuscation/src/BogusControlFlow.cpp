@@ -169,7 +169,7 @@ STATISTIC(NumAddedBasicBlocks, "e. Number of added basic blocks in this module")
 STATISTIC(FinalNumBasicBlocks, "f. Final number of basic blocks in this module");
 
 // Options for the pass
-const int defaultObfRate = 100, defaultObfTime = 4;
+const int defaultObfRate = 70, defaultObfTime = 2;
 
 static cl::opt<int> ObfProbRate("bcf_prob", cl::desc("Choose the probability [%] each basic blocks will be obfuscated by the -bcf pass"), cl::value_desc("probability rate"), cl::init(defaultObfRate), cl::Optional);
 

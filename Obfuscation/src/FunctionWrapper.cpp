@@ -14,7 +14,7 @@
  */
 #include "FunctionWrapper.h"
 
-static cl::opt<int> ProbRate("fw_prob",cl::desc("Choose the probability [%] For Each CallSite To Be Obfuscated By FunctionWrapper"),cl::value_desc("Probability Rate"), cl::init(100), cl::Optional);
+static cl::opt<int> ProbRate("fw_prob",cl::desc("Choose the probability [%] For Each CallSite To Be Obfuscated By FunctionWrapper"),cl::value_desc("Probability Rate"), cl::init(50), cl::Optional);
 
 static cl::opt<int> ObfTimes("fw_times",cl::desc("Choose how many time the FunctionWrapper pass loop on a CallSite"),cl::value_desc("Number of Times"), cl::init(3), cl::Optional);
 
