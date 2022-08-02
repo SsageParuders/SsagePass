@@ -29,5 +29,6 @@ namespace llvm{
     void fixStack(Function &F); // 修复PHI指令和逃逸变量
     void FixBasicBlockConstantExpr(BasicBlock *BB);
     void FixFunctionConstantExpr(Function *Func);
+    string rand_str(int len);
 }
 #endif // LLVM_UTILS_H

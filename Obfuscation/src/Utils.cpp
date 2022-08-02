@@ -125,6 +125,11 @@ void llvm::fixStack(Function &F) {
     }
 }
 
+/**
+ * @brief 
+ * 
+ * @param Func 
+ */
 void llvm::FixFunctionConstantExpr(Function *Func) {
   // Replace ConstantExpr with equal instructions
   // Otherwise replacing on Constant will crash the compiler
@@ -132,7 +137,11 @@ void llvm::FixFunctionConstantExpr(Function *Func) {
     FixBasicBlockConstantExpr(&BB);
   }
 }
-
+/**
+ * @brief 
+ * 
+ * @param BB 
+ */
 void llvm::FixBasicBlockConstantExpr(BasicBlock *BB) {
   // Replace ConstantExpr with equal instructions
   // Otherwise replacing on Constant will crash the compiler
@@ -158,4 +167,32 @@ void llvm::FixBasicBlockConstantExpr(BasicBlock *BB) {
       }
     }
   }
+}
+
+/**
+ * @brief 随机字符串
+ * 
+ * @param len 
+ * @return string 
+ */
+string llvm::rand_str(int len){
+    string str;
+    char c = 'O';
+    int idx;
+    for (idx = 0; idx < len; idx++){
+        switch ((rand() % 3)){
+            case 1:
+                c = 'O';
+                break;
+            case 2:
+                c = '0';
+                break;
+            default:
+                c = 'o';
+                break;
+		}
+        str.push_back(c);
+    }
+    // outs() << "\033[1;32mrand str is :" << str << "\033[0m\n";
+    return str;
 }

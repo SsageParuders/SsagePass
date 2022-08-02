@@ -37,6 +37,7 @@ add_library( SsageObfuscator MODULE # 生成动态库文件
   src/IndirectBranch.cpp
   src/FunctionWrapper.cpp
   src/BogusControlFlow.cpp
+  src/VMFlatten.cpp
 )
 
 # Use C++11 to compile your pass (i.e., supply -std=c++11).

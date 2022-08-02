@@ -54,3 +54,5 @@ clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需�
 ## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
 ./main
 echo "==================== Finish Test Fla With clang ===================="
+
+# clang++ --rewrite-symbols -mllvm --rewrite-map-file=test_symbolobf_map.yaml -fpass-plugin=../build/libSsageObfuscator.so main.cpp -o main

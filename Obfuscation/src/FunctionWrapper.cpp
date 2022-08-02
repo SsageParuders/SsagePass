@@ -14,7 +14,7 @@
  */
 #include "FunctionWrapper.h"
 
-static cl::opt<int> ProbRate("fw_prob",cl::desc("Choose the probability [%] For Each CallSite To Be Obfuscated By FunctionWrapper"),cl::value_desc("Probability Rate"), cl::init(50), cl::Optional);
+static cl::opt<int> ProbRate("fw_prob",cl::desc("Choose the probability [%] For Each CallSite To Be Obfuscated By FunctionWrapper"),cl::value_desc("Probability Rate"), cl::init(70), cl::Optional);
 
 static cl::opt<int> ObfTimes("fw_times",cl::desc("Choose how many time the FunctionWrapper pass loop on a CallSite"),cl::value_desc("Number of Times"), cl::init(3), cl::Optional);
 
@@ -36,8 +36,8 @@ PreservedAnalyses FunctionWrapperPass::run(Module &M, ModuleAnalysisManager& AM)
         outs() << "\033[1;34m============FunctionWrapper Finish============\033[0m\n";
       }
     }
-    for (CallSite *CS : callsites) {
-      for (int i = 0; i < ObfTimes && CS != nullptr; i++) {
+    for (CallSite *CS : callsites){ // 嵌套混淆发生在全局 而不是针对某个函数
+      for (int i = 0; i < ObfTimes && CS != nullptr; i++){
         CS = HandleCallSite(CS);
       }
     }
@@ -64,12 +64,16 @@ CallSite* FunctionWrapperPass::HandleCallSite(CallSite *CS) {
         }
     }
     // Create a new function which in turn calls the actual function
+    // 创建一个新的函数 return的时候返回真实函数 此所谓函数嵌套
     vector<Type *> types;
     for (unsigned i = 0; i < CS->getNumArgOperands(); i++) {
       types.push_back(CS->getArgOperand(i)->getType());
     }
     FunctionType *ft = FunctionType::get(CS->getType(), ArrayRef<Type *>(types), false);
-    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, "O0ooOO0o0OO0oO", CS->getParent()->getModule()); // 移除Hikari特征
+    // Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, "O0ooOO0o0OO0oO", CS->getParent()->getModule()); // 移除Hikari特征
+    // std::string randstring = rand_str((rand() % (20 - 5 + 1)) + 5); // 生成 长度随机 的ooOO00
+    std::string randstring = rand_str(20); // 生成 长度固定 的ooOO00
+    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, Twine(randstring), CS->getParent()->getModule()); // 优化为随机字符串
     appendToCompilerUsed(*func->getParent(), {func});
     // FIXME: Correctly Steal Function Attributes
     // func->addFnAttr(Attribute::AttrKind::OptimizeNone);

@@ -1,6 +1,7 @@
 #include "SplitBasicBlock.h" // 基本块分割
 #include "Flattening.h"  // 控制流平坦化
 #include "StringEncryption.h" // 字符串加密
+#include "VMFlatten.h"
 #include "IndirectBranch.h" //
 #include "FunctionWrapper.h" //
 #include "BogusControlFlow.h" // 虚假控制流
@@ -18,7 +19,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
   return {
     LLVM_PLUGIN_API_VERSION, "Ssage", LLVM_VERSION_STRING,
         [](PassBuilder &PB) {
-            outs() << "Version is " << 16 << "\n";
+            outs() << "Version is " << 19 << "\n";
             // for opt
             PB.registerPipelineParsingCallback(
               [&](StringRef Name, FunctionPassManager &FPM,
@@ -58,12 +59,13 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                 [](llvm::ModulePassManager &MPM, // 模块Pass 作用于某个c文件内
                    llvm::OptimizationLevel Level){
                     MPM.addPass(StringEncryptionPass(false)); // 先进行字符串加密 出现字符串加密基本块以后 再进行基本块分割和其他混淆 加大解密难度
-                    MPM.addPass(FunctionWrapperPass(false)); // 函数包装
-                    MPM.addPass(IndirectBranchPass(false)); // 间接指令
+                    MPM.addPass(FunctionWrapperPass(false));  // 函数包装
+                    MPM.addPass(IndirectBranchPass(false));   // 间接指令
                     llvm::FunctionPassManager FPM;
                     FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
-                    FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
+                    FPM.addPass(VMFlattenPass(false)); // 虚拟机控制流平坦化
                     FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+                    FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
                     MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
             });
             // 这里的注册时机不好 弃用以下方案 改用上面的方案
