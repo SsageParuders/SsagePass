@@ -8,6 +8,37 @@
 
 > SsagePass为out-of-tree编译的LLVM动态库插件<br>
 
+- 各参数介绍:
+    ```bash
+    # __attribute((__annotate__(("xx")))) // 填写注解 以控制单个函数的Pass
+    ##-----======= 详解 =======-----##
+    # bcf --- 虚假控制流
+    ## bcf_prob -- 每个基本块被虚假控制流混淆的概率 -- 0 < bcf_prob < 100
+    ## bcf_loop -- 每个函数被虚假控制流重复多少次 -- 无限制 建议 2～5
+    ## bcf_cond_compl -- 用于生成分支条件的表达式的复杂性 -- 无限制 建议 3～10
+    # fla --- 控制流平坦化
+    # funwra --- 函数嵌套包装
+    ## fw_prob -- 每个函数被包装的可能性 -- 0 < fw_prob < 100
+    ## fw_times -- 每个函数被包装嵌套多少次 -- 无限制 建议 2～5
+    # split -- 基本块分割
+    ## split_num -- 原先一个基本块被分割为多少基本块 -- 无限制 建议 2～5
+    # indibr --- 间接跳转
+    # vmf --- 虚拟机控制流平坦化
+    # strenc --- 字符串加密
+    ```
+    > 以上介绍`#`标记的为注解填写 用于控制混淆开关<br>
+    > `##`标记的为cl::opt参数 用于传递混淆粒度
+
+- 替代symbols
+    > 该功能是llvm自带的 只不过我专门注册一下罢
+    ```bash
+    # symbols_obf.yaml
+    # function: { source: _Z3addii, target: dfffff} # 函数替换
+    # global variable: { source: _ZL3aaa, transform: ccccc} # 变量替换
+    clang++ -fpass-plugin=../build/libSsageObfuscator.so -mllvm --rewrite-map-file=symbols_obf.yaml main.cpp -o main
+    # 通过-mllvm --rewrite-map-file=symbols_obf.yaml传递替换信息进入编译
+    ```
+
 - clang中触发指定Pass的临时方案:<br>
 
     ```bash
@@ -24,7 +55,7 @@
     > 这里也建议其他使用者 非必要 不开启全局混淆 这会导致不必要的性能损耗<br>
     > 针对关键函数启用指定混淆 这种方案在我眼中最佳
 
-- 传递`SplitNum`这种混淆程度的临时解决方案:<br>
+- 传递`SplitNum`这种混淆粒度的临时解决方案:<br>
     *把动态库用两种方案都加载一遍，但是Pass用NEW PM控制*
     ```bash
     # opt样例
@@ -119,5 +150,7 @@ chmod +x demo.sh && ./demo.sh
 [goron](https://github.com/amimo/goron) By amimo
 
 [Hikari](https://github.com/HikariObfuscator/Hikari) By HikariObfuscator
+
+[LLVMMyPass](https://github.com/za233/LLVMMyPass) By za233
 
 ---

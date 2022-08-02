@@ -41,6 +41,7 @@ void FlatteningPass::flatten(Function &F){
     // pass->runOnFunction(F);
 
     // Lower switch
+    // 在PMRegistration内优先进行Lower switch可能效果好些？
     FunctionPass *lower = createLegacyLowerSwitchPass();
     lower->runOnFunction(F);
     outs() << "\033[1;32mLower switch had open\033[0m\n";

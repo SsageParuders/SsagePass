@@ -1,6 +1,6 @@
 cd ./Demo # 进入Demo文件夹
 
-ls | grep -v main.cpp | grep -v help.txt | xargs rm # 清除上一次产物
+ls | grep -v main.cpp | grep -v help.txt | grep -v symbols_obf.yaml | xargs rm # 清除上一次产物
 
 ## 仅学习阶段实践了 Legacy Pass Manager 后续已迁移到 NEW Pass Manager
 # echo "==================== Start Test Fla ===================="
@@ -18,41 +18,51 @@ ls | grep -v main.cpp | grep -v help.txt | xargs rm # 清除上一次产物
 # ./main_split # 可执行程序执行
 # echo "==================== Finish Test Fla ===================="
 
-echo "==================== Start Test Fla With opt ===================="
-clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
-# opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
-opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
-# opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
-# opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
-# 一种传递混淆程度的临时方案
-clang main_fla.ll -o main_fla
-./main_fla
-echo "==================== Finish Test Fla With opt ===================="
+# echo "==================== Start Test Fla With opt ===================="
+# clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
+# # opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
+# opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll
+# # opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
+# # opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
+# # 一种传递混淆程度的临时方案
+# clang main_fla.ll -o main_fla
+# ./main_fla
+# echo "==================== Finish Test Fla With opt ===================="
 
-echo "==================== Start Test Fla With clang ===================="
-clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需要 -O1 
-# clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
-## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
+# echo "==================== Start Test Fla With clang ===================="
+# clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需要 -O1 
+# # clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
+# ## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
+# ./main
+# echo "==================== Finish Test Fla With clang ===================="
+
+
+# echo "==================== Start Test strenc With opt ===================="
+# clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
+# # opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
+# opt --load-pass-plugin=../build/libSsageObfuscator.so -O1 -S main.ll -o main_strenc.ll
+# # opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
+# # opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
+# # 一种传递混淆程度的临时方案
+# clang main_strenc.ll -o main_strenc
+# ./main_strenc
+# echo "==================== Finish Test strenc With opt ===================="
+
+# echo "==================== Start Test Fla With clang ===================="
+# clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需要 -O1 
+# # clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
+# ## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
+# ./main
+# echo "==================== Finish Test Fla With clang ===================="
+
+echo "==================== Start Test With clang ===================="
+clang++ \
+    -fpass-plugin=../build/libSsageObfuscator.so \
+    -mllvm --rewrite-map-file=symbols_obf.yaml \
+    -Xclang -load -Xclang ../build/libSsageObfuscator.so \
+    -mllvm -split_num=7 \
+    -mllvm -bcf_prob=100 -mllvm -bcf_loop=3 -mllvm -bcf_cond_compl=5 \
+    -mllvm -fw_prob=100 -mllvm -fw_times=4 \
+    main.cpp -o main
 ./main
-echo "==================== Finish Test Fla With clang ===================="
-
-
-echo "==================== Start Test strenc With opt ===================="
-clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
-# opt -load ../build/SsageObfuscator.so -enable-new-pm=0 -fla -split_num=7 -S main.ll -o main_fla.ll # 传统写法
-opt --load-pass-plugin=../build/libSsageObfuscator.so -O1 -S main.ll -o main_strenc.ll
-# opt --load-pass-plugin=../build/SsageObfuscator.so -O1 -S main.ll -o main_fla.ll # 开启全部
-# opt --load-pass-plugin=../build/SsageObfuscator.so -passes=split,fla -load ../Build/SsageObfuscator.so -split_num=7 -S main.ll -o main_fla.ll
-# 一种传递混淆程度的临时方案
-clang main_strenc.ll -o main_strenc
-./main_strenc
-echo "==================== Finish Test strenc With opt ===================="
-
-echo "==================== Start Test Fla With clang ===================="
-clang++ -fpass-plugin=../build/SsageObfuscator.so main.cpp -o main # 可能需要 -O1 
-# clang++ -fpass-plugin=../build/SsageObfuscator.so -Xclang -load -Xclang ../build/SsageObfuscator.so -mllvm -split_num=7 main.cpp -o main
-## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
-./main
-echo "==================== Finish Test Fla With clang ===================="
-
-# clang++ --rewrite-symbols -mllvm --rewrite-map-file=test_symbolobf_map.yaml -fpass-plugin=../build/libSsageObfuscator.so main.cpp -o main
+echo "==================== Finish Test With clang ===================="

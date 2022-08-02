@@ -111,25 +111,19 @@ void VMFlattenPass::gen_inst(std::vector<VMInst *> *all_inst, std::map<Node *, u
 void VMFlattenPass::dump_inst(std::vector<VMInst *> *all_inst){
     unsigned int x = 0;
     for (std::vector<VMInst *>::iterator i = all_inst->begin(); i != all_inst->end(); i++){
-        printf("0x%02x: ", x++);
+        printf("\033[1;32m0x%02x: \033[0m", x++);
         VMInst *c = *i;
         if (c->type == RUN_BLOCK){
-            printf("RUN_BLOCK 0x%02x\n", c->op1);
+            printf("\033[1;32mRUN_BLOCK 0x%02x\033[0m\n", c->op1);
         }
         if (c->type == JMP_BORING){
-            printf("JMP_BORING 0x%02x\n", c->op1);
+            printf("\033[1;32mJMP_BORING 0x%02x\033[0m\n", c->op1);
         }
         if (c->type == JMP_SELECT){
-            printf("JMP_SELECT 0x%02x 0x%02x\n", c->op1, c->op2);
+            printf("\033[1;32mJMP_SELECT 0x%02x 0x%02x\033[0m\n", c->op1, c->op2);
         }
     }
 }
-
-// void getAnalysisUsage(AnalysisUsage &AU) const override{
-//     errs() << "Require LowerSwitchPass\n";
-//     AU.addRequiredID(LowerSwitchID);
-//     FunctionPass::getAnalysisUsage(AU);
-// }
 
 void VMFlattenPass::DoFlatten(Function *f, int seed){
     srand(seed);
@@ -213,7 +207,6 @@ void VMFlattenPass::DoFlatten(Function *f, int seed){
     Value *zero = ConstantInt::get(Type::getInt32Ty(f->getContext()), 0);
 
     Value *op1_offset = IRB.CreateAdd(IRB.CreateLoad(vm_pc->getType()->getPointerElementType(), vm_pc), ConstantInt::get(Type::getInt32Ty(f->getContext()), 1));
-    // Value *op1_offset = IRB.CreateAdd();
     Value *op2_offset = IRB.CreateAdd(IRB.CreateLoad(vm_pc->getType()->getPointerElementType(),vm_pc), ConstantInt::get(Type::getInt32Ty(f->getContext()), 2));
 
     Value *optype = IRB.CreateLoad(IRB.CreateGEP(oparr_var->getType()->getPointerElementType(), oparr_var, {zero, IRB.CreateLoad(vm_pc->getType()->getPointerElementType(), vm_pc)})->getType()->getPointerElementType(),
@@ -240,8 +233,7 @@ void VMFlattenPass::DoFlatten(Function *f, int seed){
     IRB.SetInsertPoint(run_block);
     /*
         std::vector<Constant *> bb_addrs;
-        for(std::vector<BasicBlock *>::iterator b=origBB.begin();b!=origBB.end();b++)
-        {
+        for(std::vector<BasicBlock *>::iterator b=origBB.begin();b!=origBB.end();b++){
             BasicBlock *block=*b;
             bb_addrs.push_back(BlockAddress::get(block));
         }
@@ -251,7 +243,7 @@ void VMFlattenPass::DoFlatten(Function *f, int seed){
         Value *load=IRB.CreateLoad(IRB.CreateGEP(address_arr_var,{zero,op1}),"address");
         IndirectBrInst *indirBr=IndirectBrInst::Create(load,bb_addrs.size(),run_block);
         for(std::vector<BasicBlock *>::iterator b=origBB.begin();b!=origBB.end();b++)
-        {
+{
             BasicBlock *block=*b;
             indirBr->addDestination(block);
         }
@@ -268,12 +260,12 @@ void VMFlattenPass::DoFlatten(Function *f, int seed){
     for (std::vector<BasicBlock *>::iterator b = origBB.begin(); b != origBB.end(); b++) { // Handle successors
         BasicBlock *block = *b;
         if (block->getTerminator()->getNumSuccessors() == 1){
-            errs() << "This block has 1 successor\n";
+            errs() << "\033[1;32mThis block has 1 successor\033[0m\n";
             BasicBlock *succ = block->getTerminator()->getSuccessor(0);
             block->getTerminator()->eraseFromParent();
             BranchInst::Create(defaultCase, block);
         } else if (block->getTerminator()->getNumSuccessors() == 2){
-            errs() << "This block has 2 successors\n";
+            errs() << "\033[1;32mThis block has 2 successors\033[0m\n";
             BranchInst *oldBr = cast<BranchInst>(block->getTerminator());
             SelectInst *select = SelectInst::Create(oldBr->getCondition(), ConstantInt::get(Type::getInt32Ty(f->getContext()), 1), ConstantInt::get(Type::getInt32Ty(f->getContext()), 0), "", block->getTerminator());
             new StoreInst(select, vm_flag, block->getTerminator());
