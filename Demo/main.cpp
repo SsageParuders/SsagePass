@@ -9,7 +9,8 @@ int add(int a, int b) __attribute((__annotate__(("split vmf")))){
 }
 // strenc  indibr strenc
 void say_hello()
-    __attribute((__annotate__(("indibr split vmf"))))
+    // indibr split vmf
+    __attribute((__annotate__(("icall"))))
 {
     printf("Hello~\n");
 }

@@ -195,6 +195,7 @@ void VMFlattenPass::DoFlatten(Function *f, int seed){
     ArrayType *AT = ArrayType::get(Type::getInt32Ty(f->getContext()), opcodes.size());
     Constant *opcode_array = ConstantArray::get(AT, ArrayRef<Constant *>(opcodes));
     GlobalVariable *oparr_var = new GlobalVariable(*(f->getParent()), AT, false, GlobalValue::LinkageTypes::PrivateLinkage, opcode_array, "opcodes");
+    // 去除第一个基本块末尾的跳转
     oldEntry->getTerminator()->eraseFromParent();
     AllocaInst *vm_pc = new AllocaInst(Type::getInt32Ty(f->getContext()), 0, Twine("VMpc"), oldEntry);
     ConstantInt *init_pc = ConstantInt::get(Type::getInt32Ty(f->getContext()), 0);

@@ -2,6 +2,20 @@ cd ./Demo # 进入Demo文件夹
 
 ls | grep -v main.cpp | grep -v help.txt | grep -v symbols_obf.yaml | xargs rm # 清除上一次产物
 
+echo "==================== Start Test With clang ===================="
+clang++ \
+    -fpass-plugin=../build/libSsageObfuscator.so \
+    -mllvm --rewrite-map-file=symbols_obf.yaml \
+    -Xclang -load -Xclang ../build/libSsageObfuscator.so \
+    -mllvm -split_num=7 \
+    -mllvm -bcf_prob=100 -mllvm -bcf_loop=3 -mllvm -bcf_cond_compl=5 \
+    -mllvm -fw_prob=100 -mllvm -fw_times=4 \
+    main.cpp -o main
+./main
+# sleep 1s
+readelf -s main
+echo "==================== Finish Test With clang ===================="
+
 ## 仅学习阶段实践了 Legacy Pass Manager 后续已迁移到 NEW Pass Manager
 # echo "==================== Start Test Fla ===================="
 # clang -S -emit-llvm main.cpp -o main.ll # 编译成可阅读的IR层
@@ -54,15 +68,3 @@ ls | grep -v main.cpp | grep -v help.txt | grep -v symbols_obf.yaml | xargs rm #
 # ## 参考:https://github.com/banach-space/llvm-tutor#overview-of-the-passes 的下半段
 # ./main
 # echo "==================== Finish Test Fla With clang ===================="
-
-echo "==================== Start Test With clang ===================="
-clang++ \
-    -fpass-plugin=../build/libSsageObfuscator.so \
-    -mllvm --rewrite-map-file=symbols_obf.yaml \
-    -Xclang -load -Xclang ../build/libSsageObfuscator.so \
-    -mllvm -split_num=7 \
-    -mllvm -bcf_prob=100 -mllvm -bcf_loop=3 -mllvm -bcf_cond_compl=5 \
-    -mllvm -fw_prob=100 -mllvm -fw_times=4 \
-    main.cpp -o main
-./main
-echo "==================== Finish Test With clang ===================="
