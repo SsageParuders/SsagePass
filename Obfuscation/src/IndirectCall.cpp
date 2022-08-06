@@ -22,9 +22,12 @@ PreservedAnalyses IndirectCallPass::run(Function &F, FunctionAnalysisManager &AM
 }
 
 bool IndirectCallPass::doIndirctCall(Function &Fn){
+    outs() << "0\n";
     if (Options && Options->skipFunction(Fn.getName())){
+        outs() << "0000\n";
         return false;
     }
+    outs() << "1\n";
     LLVMContext &Ctx = Fn.getContext();
     CalleeNumbering.clear();
     Callees.clear();
@@ -35,7 +38,7 @@ bool IndirectCallPass::doIndirctCall(Function &Fn){
     if (Callees.empty()){
         return false;
     }
-
+    outs() << "2\n";
     uint32_t V = RandomEngine.get_uint32_t() & ~3;
     ConstantInt *EncKey = ConstantInt::get(Type::getInt32Ty(Ctx), V, false);
 
@@ -43,17 +46,18 @@ bool IndirectCallPass::doIndirctCall(Function &Fn){
     if (IPO){
         SecretInfo = IPO->getIPOInfo(&Fn);
     }
-
+    outs() << "3\n";
     Value *MySecret;
     if (SecretInfo){
         MySecret = SecretInfo->SecretLI;
     } else {
         MySecret = ConstantInt::get(Type::getInt32Ty(Ctx), 0, true);
     }
-
+    outs() << "4\n";
     ConstantInt *Zero = ConstantInt::get(Type::getInt32Ty(Ctx), 0);
     GlobalVariable *Targets = getIndirectCallees(Fn, EncKey);
 
+    outs() << "5\n";
     for (auto CI : CallSites){
         SmallVector<Value *, 8> Args;
         SmallVector<AttributeSet, 8> ArgAttrVec;
@@ -92,6 +96,7 @@ bool IndirectCallPass::doIndirctCall(Function &Fn){
         FnPtr->setName("Call_" + Callee->getName());
         CallInst *NewCall = IRB.CreateCall(FTy, FnPtr, Args, Call->getName());
         NewCall->setAttributes(NewCallPAL);
+        NewCall->setCallingConv(CS.getCallingConv());
         Call->replaceAllUsesWith(NewCall);
         Call->eraseFromParent();
     }

@@ -73,7 +73,7 @@ CallSite* FunctionWrapperPass::HandleCallSite(CallSite *CS) {
     // Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, "O0ooOO0o0OO0oO", CS->getParent()->getModule()); // 移除Hikari特征
     // std::string randstring = rand_str((rand() % (20 - 5 + 1)) + 5); // 生成 长度随机 的ooOO00
     std::string randstring = rand_str(20); // 生成 长度固定 的ooOO00
-    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, Twine(randstring), CS->getParent()->getModule()); // 优化为随机字符串
+    Function *func = Function::Create(ft, GlobalValue::LinkageTypes::InternalLinkage, Twine("Hack" + randstring + "END"), CS->getParent()->getModule()); // 优化为随机字符串 // FIXBUGS
     appendToCompilerUsed(*func->getParent(), {func});
     // FIXME: Correctly Steal Function Attributes
     // func->addFnAttr(Attribute::AttrKind::OptimizeNone);

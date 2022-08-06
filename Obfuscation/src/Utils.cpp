@@ -180,6 +180,7 @@ string llvm::rand_str(int len){
     char c = 'O';
     int idx;
     for (idx = 0; idx < len; idx++){
+        
         switch ((rand() % 3)){
             case 1:
                 c = 'O';
@@ -193,6 +194,5 @@ string llvm::rand_str(int len){
 		}
         str.push_back(c);
     }
-    // outs() << "\033[1;32mrand str is :" << str << "\033[0m\n";
     return str;
 }
