@@ -43,6 +43,7 @@ add_library( SsageObfuscator MODULE # 生成动态库文件
   src/IPObfuscationContext.cpp
   src/MBAObfuscation.cpp
   src/MBAUtils.cpp
+  src/FlatteningEnhanced.cpp
 )
 
 # Use C++11 to compile your pass (i.e., supply -std=c++11).

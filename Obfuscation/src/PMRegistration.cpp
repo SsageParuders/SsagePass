@@ -5,6 +5,7 @@
 #include "VMFlatten.h" // 虚拟机控制流平坦化
 #include "IndirectBranch.h" // 间接跳转
 #include "FunctionWrapper.h" // 函数嵌套
+#include "FlatteningEnhanced.h" // 平坦化控制流增强版
 #include "BogusControlFlow.h" // 虚假控制流
 #include "llvm/Transforms/Utils/SymbolRewriter.h" // 重命名符号
 #include "IndirectCall.h" // 间接调用
@@ -74,6 +75,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                     FPM.addPass(MBAObfuscation(false)); // 来自 Pluto 的线性混合布尔算术混淆
                     FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
                     MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
+                    MPM.addPass(FlatteningEnhanced(false)); // 来自 Pluto 的平坦化控制流增强版
                     MPM.addPass(FunctionWrapperPass(false)); // 函数包装 理论上函数包装最好也是放在最后
                     MPM.addPass(IndirectBranchPass(false)); // 间接指令 理论上间接指令应该放在最后
                     MPM.addPass(RewriteSymbolPass()); // 根据yaml信息 重命名特定symbols
