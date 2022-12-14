@@ -1,5 +1,6 @@
 #include "SplitBasicBlock.h" // 基本块分割
 #include "Flattening.h"  // 控制流平坦化
+#include "MBAObfuscation.h" // 线性混合布尔算术混淆
 #include "StringEncryption.h" // 字符串加密
 #include "VMFlatten.h" // 虚拟机控制流平坦化
 #include "IndirectBranch.h" // 间接跳转
@@ -70,6 +71,7 @@ llvm::PassPluginLibraryInfo getSsagePluginInfo() {
                     FPM.addPass(SplitBasicBlockPass(false));  // 优先进行基本块分割
                     FPM.addPass(VMFlattenPass(false)); // 虚拟机控制流平坦化
                     FPM.addPass(FlatteningPass(false));       // 对于控制流平坦化 不提前开启LowerSwitch 只在控制流平坦化内调用LegacyLowerSwitch
+                    FPM.addPass(MBAObfuscation(false)); // 来自 Pluto 的线性混合布尔算术混淆
                     FPM.addPass(BogusControlFlowPass(false)); // 虚假控制流
                     MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
                     MPM.addPass(FunctionWrapperPass(false)); // 函数包装 理论上函数包装最好也是放在最后
