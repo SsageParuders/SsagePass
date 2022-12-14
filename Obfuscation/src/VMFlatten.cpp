@@ -4,10 +4,8 @@ PreservedAnalyses VMFlattenPass::run(Function& F, FunctionAnalysisManager& AM) {
     Function *tmp = &F; // 传入的Function
     // 判断是否需要开启控制流平坦化
     if (toObfuscate(flag, tmp, "vmf")) {
-        outs() << "\033[1;34m============VMFlattening Start============\033[0m\n";
-        outs() << "\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[1;32m[VMFlattening] Function : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         DoFlatten(tmp,0);
-        outs() << "\033[1;34m============VMFlattening Finish============\033[0m\n";
     }
     return PreservedAnalyses::none();
 }
@@ -111,16 +109,16 @@ void VMFlattenPass::gen_inst(std::vector<VMInst *> *all_inst, std::map<Node *, u
 void VMFlattenPass::dump_inst(std::vector<VMInst *> *all_inst){
     unsigned int x = 0;
     for (std::vector<VMInst *>::iterator i = all_inst->begin(); i != all_inst->end(); i++){
-        printf("\033[1;32m0x%02x: \033[0m", x++);
+        //printf("\033[1;32m0x%02x: \033[0m", x++);
         VMInst *c = *i;
         if (c->type == RUN_BLOCK){
-            printf("\033[1;32mRUN_BLOCK 0x%02x\033[0m\n", c->op1);
+            //printf("\033[1;32mRUN_BLOCK 0x%02x\033[0m\n", c->op1);
         }
         if (c->type == JMP_BORING){
-            printf("\033[1;32mJMP_BORING 0x%02x\033[0m\n", c->op1);
+            //printf("\033[1;32mJMP_BORING 0x%02x\033[0m\n", c->op1);
         }
         if (c->type == JMP_SELECT){
-            printf("\033[1;32mJMP_SELECT 0x%02x 0x%02x\033[0m\n", c->op1, c->op2);
+            //printf("\033[1;32mJMP_SELECT 0x%02x 0x%02x\033[0m\n", c->op1, c->op2);
         }
     }
 }

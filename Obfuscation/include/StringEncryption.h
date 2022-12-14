@@ -16,6 +16,10 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
+#include "llvm/Support/FormatVariadic.h"
+#include "llvm/Support/SHA1.h"
+#include "llvm/Transforms/Utils/ModuleUtils.h"
+
 // User libs
 #include "CryptoUtils.h"
 #include "Utils.h"
@@ -24,8 +28,18 @@
 #include <set>
 #include <iostream>
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
+#include <vector>
+
 using namespace std;
 namespace llvm {
+    struct EncryptedGV {
+        GlobalVariable *GV;
+        uint64_t key;
+        uint32_t len;
+    };
+
     class StringEncryptionPass : public PassInfoMixin<StringEncryptionPass>{
         public:
             bool flag;
@@ -34,9 +48,8 @@ namespace llvm {
                 this->flag = flag;
             }
             PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM); // Pass实现函数
-            void HandleFunction(Function *Func); // 处理字符串加密
-            void HandleDecryptionBlock(BasicBlock *B, BasicBlock *C, map<GlobalVariable *, Constant *> &GV2Keys); // 处理解密函数
-            bool doFinalization(Module &M);
+            void insertArrayDecryption(Module &M, EncryptedGV encGV);
+            void insertIntDecryption(Module &M, EncryptedGV encGV);
             static bool isRequired() { return true; } // 直接返回true即可
     };
     StringEncryptionPass *createStringEncryption(bool flag); // 创建字符串加密

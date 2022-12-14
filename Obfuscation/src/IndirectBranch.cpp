@@ -24,10 +24,8 @@ PreservedAnalyses IndirectBranchPass::run(Module &M, ModuleAnalysisManager& AM) 
     }
     for (Function *F : funcs) {
         if (toObfuscate(flag, F, "indibr")) {
-            outs() << "\033[1;34m============IndirectBranch Start============\033[0m\n";
-            outs() << "\033[1;32mFunction : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+            outs() << "\033[1;32m[IndirectBranch] Function : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
             HandleFunction(*F);
-            outs() << "\033[1;34m============IndirectBranch Finish============\033[0m\n";
         }
     }
     return PreservedAnalyses::all();
