@@ -13,7 +13,7 @@ STATISTIC(Flattened, "Functions flattened");
 PreservedAnalyses FlatteningPass::run(Function& F, FunctionAnalysisManager& AM) {
     Function *tmp = &F; // 传入的Function
     // 判断是否需要开启控制流平坦化
-    if (toObfuscate(flag, tmp, "fla")) {
+    if (toObfuscate(flag, tmp, "ofla")) {
         outs() << "\033[1;32m[Flattening] Function : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         INIT_CONTEXT(F);
         // 不再自动进行基本块分割
