@@ -4,3 +4,8 @@ Demo/*.ll
 llvm-pass-tutorial-dev
 SsagePass-master
 obfuscator-AutoRegistration
+*.cmake
+*/CMakeFiles
+*/CMakeCache*
+Obfuscation/Makefile
+Obfuscation/libSsageObfuscator.so
