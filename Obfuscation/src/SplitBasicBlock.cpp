@@ -38,11 +38,9 @@ static cl::opt<int> SplitNum("split_num", cl::init(3), cl::desc("Split <split_nu
 PreservedAnalyses SplitBasicBlockPass::run(Function& F, FunctionAnalysisManager& AM) {
     Function *tmp = &F; // 传入的Function
     if (toObfuscate(flag, tmp, "split")){ // 判断什么函数需要开启混淆
-        outs() << "\033[1;34m============SplitBasicBlock Start============\033[0m\n";
-        outs() << "\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[1;32m[SplitBasicBlock] Function : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         split(tmp); // 分割流程
         ++Split; // 计次
-        outs() << "\033[1;34m============SplitBasicBlock Finish============\033[0m\n";
     }
     return PreservedAnalyses::none();
 }
@@ -61,22 +59,22 @@ void SplitBasicBlockPass::split(Function *f){
     // 遍历函数的全部基本块
     for (std::vector<BasicBlock *>::iterator I = origBB.begin(), IE = origBB.end();I != IE; ++I){
         BasicBlock *curr = *I;
-        outs() << "\033[1;32mSplitNum : " << SplitNum << "\033[0m\n";
-        outs() << "\033[1;32mBasicBlock Size : " << curr->size() << "\033[0m\n";
+        //outs() << "\033[1;32mSplitNum : " << SplitNum << "\033[0m\n";
+        //outs() << "\033[1;32mBasicBlock Size : " << curr->size() << "\033[0m\n";
         int splitN = SplitNum;
         // 无需分割只有一条指令的基本块
         // 不可分割含有PHI指令基本块
         if (curr->size() < 2 || containsPHI(curr)){
-            outs() << "\033[0;33mThis BasicBlock is lower then two or had PIH Instruction!\033[0m\n";
+            //outs() << "\033[0;33mThis BasicBlock is lower then two or had PIH Instruction!\033[0m\n";
             continue;
         }
         // 检查splitN和基本块大小 如果传入的分割块数甚至大于等于基本块自身大小 则修改分割数为基本块大小减一
         if ((size_t)splitN >= curr->size()){
-            outs() << "\033[0;33mSplitNum is bigger then currBasicBlock's size\033[0m\n"; // warning
-            outs() << "\033[0;33mSo SplitNum Now is BasicBlock's size -1 : " << (curr->size() - 1) << "\033[0m\n";
+            //outs() << "\033[0;33mSplitNum is bigger then currBasicBlock's size\033[0m\n"; // warning
+            //outs() << "\033[0;33mSo SplitNum Now is BasicBlock's size -1 : " << (curr->size() - 1) << "\033[0m\n";
             splitN = curr->size() - 1;
         } else {
-            outs() << "\033[1;32msplitNum Now is " << splitN << "\033[0m\n";
+            //outs() << "\033[1;32msplitNum Now is " << splitN << "\033[0m\n";
         }
         // Generate splits point
         std::vector<int> test;

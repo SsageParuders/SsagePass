@@ -14,24 +14,22 @@ PreservedAnalyses FlatteningPass::run(Function& F, FunctionAnalysisManager& AM) 
     Function *tmp = &F; // 传入的Function
     // 判断是否需要开启控制流平坦化
     if (toObfuscate(flag, tmp, "fla")) {
-        outs() << "\033[1;34m============Flattening Start============\033[0m\n";
-        outs() << "\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[1;32m[Flattening] Function : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         INIT_CONTEXT(F);
         // 不再自动进行基本块分割
         // SplitBasicBlockPass *pass = createSplitBasicBlock(flag); // 在控制流平坦化之前先进行基本块分割 以提高混淆程度
         // pass->run(F, AM);
         flatten(*tmp);
         ++Flattened;
-        outs() << "\033[1;34m============Flattening Finish============\033[0m\n";
     }
     return PreservedAnalyses::none();
 }
 
 void FlatteningPass::flatten(Function &F){
-    outs() << "\033[1;32mFunction size : " << F.size() << "\033[0m\n";
+    //outs() << "\033[1;32mFunction size : " << F.size() << "\033[0m\n";
     // 基本块数量不超过1则无需平坦化
     if(F.size() <= 1){
-        outs() << "\033[0;33mFunction size is lower then one\033[0m\n"; // warning
+        //outs() << "\033[0;33mFunction size is lower then one\033[0m\n"; // warning
         return;
     }
 
@@ -44,7 +42,7 @@ void FlatteningPass::flatten(Function &F){
     // 在PMRegistration内优先进行Lower switch可能效果好些？
     FunctionPass *lower = createLegacyLowerSwitchPass();
     lower->runOnFunction(F);
-    outs() << "\033[1;32mLower switch had open\033[0m\n";
+    //outs() << "\033[1;32mLower switch had open\033[0m\n";
 
     // 将除入口块（第一个基本块）以外的基本块保存到一个 vector 容器中，便于后续处理
     // 首先保存所有基本块

@@ -13,21 +13,19 @@ using std::vector;
 PreservedAnalyses IndirectCallPass::run(Function &F, FunctionAnalysisManager &AM){
     // 判断是否需要开启间接调用
     if (toObfuscate(flag, &F, "icall")){
-        outs() << "\033[1;34m============IndirectCall Start============\033[0m\n";
-        outs() << "\033[1;32mFunction : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+        outs() << "\033[1;32m[IndirectCall] Function : " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
         doIndirctCall(F);
-        outs() << "\033[1;34m============IndirectCall Finish============\033[0m\n";
     }
     return PreservedAnalyses::none();
 }
 
 bool IndirectCallPass::doIndirctCall(Function &Fn){
-    outs() << "0\n";
+    //outs() << "0\n";
     if (Options && Options->skipFunction(Fn.getName())){
-        outs() << "0000\n";
+        //outs() << "0000\n";
         return false;
     }
-    outs() << "1\n";
+    //outs() << "1\n";
     LLVMContext &Ctx = Fn.getContext();
     CalleeNumbering.clear();
     Callees.clear();
@@ -38,7 +36,7 @@ bool IndirectCallPass::doIndirctCall(Function &Fn){
     if (Callees.empty()){
         return false;
     }
-    outs() << "2\n";
+    //outs() << "2\n";
     uint32_t V = RandomEngine.get_uint32_t() & ~3;
     ConstantInt *EncKey = ConstantInt::get(Type::getInt32Ty(Ctx), V, false);
 
@@ -46,18 +44,18 @@ bool IndirectCallPass::doIndirctCall(Function &Fn){
     if (IPO){
         SecretInfo = IPO->getIPOInfo(&Fn);
     }
-    outs() << "3\n";
+    //outs() << "3\n";
     Value *MySecret;
     if (SecretInfo){
         MySecret = SecretInfo->SecretLI;
     } else {
         MySecret = ConstantInt::get(Type::getInt32Ty(Ctx), 0, true);
     }
-    outs() << "4\n";
+    //outs() << "4\n";
     ConstantInt *Zero = ConstantInt::get(Type::getInt32Ty(Ctx), 0);
     GlobalVariable *Targets = getIndirectCallees(Fn, EncKey);
 
-    outs() << "5\n";
+    //outs() << "5\n";
     for (auto CI : CallSites){
         SmallVector<Value *, 8> Args;
         SmallVector<AttributeSet, 8> ArgAttrVec;
