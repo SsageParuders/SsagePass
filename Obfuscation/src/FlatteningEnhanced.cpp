@@ -21,11 +21,11 @@
 using namespace llvm;
 
 PreservedAnalyses FlatteningEnhanced::run(Module &M, ModuleAnalysisManager& AM) {
-    if (toObfuscate(flag, &F, "enfla")) {
-        vector<CallSite *> callsites;    
-        Function *updateFunc = buildUpdateKeyFunc(&M);
+    vector<CallSite *> callsites;    
+    Function *updateFunc = buildUpdateKeyFunc(&M);
 
-        for(Function &f: M){
+    for(Function &f: M){
+        if (toObfuscate(flag, &f, "enfla")) {
             outs() << "\033[1;32m[FlatteningEnhanced] Function: " << f.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
 
             if (&f == updateFunc)
