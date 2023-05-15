@@ -21,18 +21,17 @@
 using namespace llvm;
 
 PreservedAnalyses FlatteningEnhanced::run(Module &M, ModuleAnalysisManager& AM) {
-    vector<CallSite *> callsites;
-    for (Module::iterator iter = M.begin(); iter != M.end(); iter++) {
-      Function &F = *iter; // 迭代每个函数
-      if (toObfuscate(flag, &F, "enfla")) {
-        outs() << "\033[1;32m[FlatteningEnhanced] Function: " << F.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
-        Function *updateFunc = buildUpdateKeyFunc(&M);
-        for (Function &f : M) {
+    vector<CallSite *> callsites;    
+    Function *updateFunc = buildUpdateKeyFunc(&M);
+
+    for(Function &f: M){
+        if (toObfuscate(flag, &f, "enfla")) {
+            outs() << "\033[1;32m[FlatteningEnhanced] Function: " << f.getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
+
             if (&f == updateFunc)
-            continue;
+                continue;
             DoFlatteningEnhanced(&f, 0, updateFunc);
         }
-      }
     }
 
     return PreservedAnalyses::all();
