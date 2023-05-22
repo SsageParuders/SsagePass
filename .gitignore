@@ -9,3 +9,4 @@ obfuscator-AutoRegistration
 */CMakeCache*
 Obfuscation/Makefile
 Obfuscation/libSsageObfuscator.so
+.cache

@@ -11,11 +11,11 @@ static cl::opt<bool> OnlyStr("onlystr", cl::init(true),
                              cl::desc("Encrypt string variable only"));
 
 PreservedAnalyses StringEncryptionPass::run(Module &M, ModuleAnalysisManager& AM) {
+    for (Module::iterator iter = M.begin(); iter != M.end(); iter++) {
+        Function *F = &(*iter);
         if (toObfuscate(flag, F, "strenc")){
-            for (Module::iterator iter = M.begin(); iter != M.end(); iter++) {
-                Function *F = &(*iter);
-                outs() << "\033[1;32m[StringEncryption] Function : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
-            }
+            Function *F = &(*iter);
+            outs() << "\033[1;32m[StringEncryption] Function : " << F->getName() << "\033[0m\n"; // 打印一下被混淆函数的symbol
             INIT_CONTEXT(M);
             vector<GlobalVariable *> GVs;
             for (GlobalVariable &GV : M.getGlobalList()) {
@@ -24,48 +24,50 @@ PreservedAnalyses StringEncryptionPass::run(Module &M, ModuleAnalysisManager& AM
             for (int i = 0; i < ObfuTimes; i++) {
                 for (GlobalVariable *GV : GVs) {
                 // Only encrypt globals of integer and array
-                if (!GV->getValueType()->isIntegerTy() &&
-                    !GV->getValueType()->isArrayTy()) {
+                if (!GV->getValueType()->isIntegerTy() && !GV->getValueType()->isArrayTy()) {
                     continue;
                 }
-                if (GV->hasInitializer() && GV->getInitializer() &&
-                    (GV->getName().contains(".str") || !OnlyStr)
-                    // Do not encrypt globals having a section named "llvm.metadata"
-                    && !GV->getSection().equals("llvm.metadata")
-                    && GV->getSection().find(StringRef("__objc")) == string::npos && GV->getName().find("OBJC") == string::npos) {
+                if (GV->hasInitializer() && GV->getInitializer() && (GV->getName().contains(".str") || !OnlyStr)
+                    // Do not encrypt globals having a section named
+                    // "llvm.metadata"
+                    && !GV->getSection().equals("llvm.metadata") &&
+                    GV->getSection().find(StringRef("__objc")) == string::npos &&
+                    GV->getName().find("OBJC") == string::npos) {
                     Constant *initializer = GV->getInitializer();
                     ConstantInt *intData = dyn_cast<ConstantInt>(initializer);
                     ConstantDataArray *arrData = dyn_cast<ConstantDataArray>(initializer);
-
                     if (arrData) {
-                    uint32_t eleSize = arrData->getElementByteSize();
-                    uint32_t eleNum = arrData->getNumElements();
-                    uint32_t arrLen = eleNum * eleSize;
-                    char *data = const_cast<char *>(arrData->getRawDataValues().data());
-                    char *dataCopy = new char[arrLen];
-                    memcpy(dataCopy, data, arrLen);
-                    uint64_t key = cryptoutils->get_uint64_t();
-                    // A simple xor encryption
-                    for (uint32_t i = 0; i < arrLen; i++) {
-                        dataCopy[i] ^= ((char *)&key)[i % eleSize];
-                    }
-                    GV->setInitializer(ConstantDataArray::getRaw(
-                        StringRef(dataCopy, arrLen), eleNum, arrData->getElementType()));
-                    GV->setConstant(false);
-                    insertArrayDecryption(M, {GV, key, eleNum});
+                        uint32_t eleSize = arrData->getElementByteSize();
+                        uint32_t eleNum = arrData->getNumElements();
+                        uint32_t arrLen = eleNum * eleSize;
+                        char *data = const_cast<char *>(arrData->getRawDataValues().data());
+                        char *dataCopy = new char[arrLen];
+                        memcpy(dataCopy, data, arrLen);
+                        uint64_t key = cryptoutils->get_uint64_t();
+                        // A simple xor encryption
+                        for (uint32_t i = 0; i < arrLen; i++) {
+                            dataCopy[i] ^= ((char *)&key)[i % eleSize];
+                        }
+                        GV->setInitializer(ConstantDataArray::getRaw(
+                            StringRef(dataCopy, arrLen), eleNum,
+                            arrData->getElementType()));
+                        GV->setConstant(false);
+                        insertArrayDecryption(M, {GV, key, eleNum});
                     } else if (intData) {
-                    uint64_t key = cryptoutils->get_uint64_t();
-                    ConstantInt *enc =
-                        CONST(intData->getType(), key ^ intData->getZExtValue());
-                    GV->setInitializer(enc);
-                    GV->setConstant(false);
-                    insertIntDecryption(M, {GV, key, 1LL});
+                        uint64_t key = cryptoutils->get_uint64_t();
+                        ConstantInt *enc = CONST(intData->getType(),
+                                                key ^ intData->getZExtValue());
+                        GV->setInitializer(enc);
+                        GV->setConstant(false);
+                        insertIntDecryption(M, {GV, key, 1LL});
+                        }
                     }
-                }
                 }
             }
+        } else {
+            return PreservedAnalyses::all();
         }
-
+    }
     return PreservedAnalyses::all();
 }
 /*

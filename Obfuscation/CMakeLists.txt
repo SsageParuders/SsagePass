@@ -5,17 +5,17 @@
 cmake_minimum_required(VERSION 3.13.4)
 # SET (CMAKE_C_COMPILER_WORKS 1)
 # SET (CMAKE_CXX_COMPILER_WORKS 1)
-set(CMAKE_C_COMPILER /root/android_clang_14_06/bin/clang) # 调用原生NDK的clang 来自AOSP
-set(CMAKE_CXX_COMPILER /root/android_clang_14_06/bin/clang) # 调用原生NDK的clang++ 来自AOSP
+set(CMAKE_C_COMPILER /home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev/bin/clang) # 调用原生NDK的clang 来自AOSP
+set(CMAKE_CXX_COMPILER /home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev/bin/clang) # 调用原生NDK的clang++ 来自AOSP
 
 project(SsagePass) # 项目名称
 # we need LLVM_HOME in order not automatically set LLVM_DIR
-set(ENV{LLVM_HOME} /root/android_clang_14_06) # 指定LLVM_HOME为来自原生NDK的
-set(ENV{LLVM_DIR} /root/android_clang_14_06/lib64/cmake/llvm) # 指定cmake文件 如此可以连接到LLVM库
+set(ENV{LLVM_HOME} /home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev) # 指定LLVM_HOME为来自原生NDK的
+set(ENV{LLVM_DIR} /home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev/lib64/cmake/llvm) # 指定cmake文件 如此可以连接到LLVM库
 
 find_package(LLVM REQUIRED CONFIG) # 寻找LLVM依赖包
 add_definitions(${LLVM_DEFINITIONS}) # 预定义
-include_directories(/root/android_clang_14_06/include) # LLVM的头文件
+include_directories(/home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev/include) # LLVM的头文件
 include_directories("./include") # 包含 ./include 文件夹中的头文件 主要是为Pass项目服务
 link_directories(${LLVM_LIBRARY_DIRS}) # LLVM依赖库
 
@@ -23,7 +23,7 @@ link_directories(${LLVM_LIBRARY_DIRS}) # LLVM依赖库
 set(CMAKE_CXX_STANDARD 14) # LLVM启用14特性
 ## 确保使用llvm的libc++ 而不是来自gcc的libstdc++
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++") # libc++
-include_directories(/root/android_clang_14_06/include/c++/v1) # libc++的头文件包含路径
+include_directories(/home/ssage/Android/ndk-llvm/out/install/linux-x86/clang-dev/include/c++/v1) # libc++的头文件包含路径
 set(CMAKE_SKIP_RPATH ON)
 
 add_library( SsageObfuscator MODULE # 生成动态库文件
